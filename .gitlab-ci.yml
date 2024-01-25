@@ -79,30 +79,3 @@ unit_test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-
-
-build docker image:
-  image: docker:latest
-  stage: building
-  interruptible: true
-  except:
-    changes:
-      - "**/README.md"
-  only:
-    - master
-  variables:
-    DOCKER_TLS_CERTDIR: "/certs"
-  tags:
-    - docker
-  services:
-    - docker:dind
-  before_script: []
-  script:
-    - >
-        docker build
-        -t $CI_REGISTRY_IMAGE:latest
-        --cache-from $CI_REGISTRY_IMAGE:latest
-        .
-    - docker tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
