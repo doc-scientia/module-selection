@@ -1,0 +1,30 @@
+# pyc files
+**/*.pyc
+
+.cache
+
+# content of db
+**/*.db
+
+# idea files
+.idea
+*.iml
+
+# virtual environment
+venv/
+
+# out
+out/
+
+# pycache
+**/__pycache__/
+
+.DS_Store
+.DS_Store?
+
+
+zztests
+zzendoints
+
+
+/dummy-store/

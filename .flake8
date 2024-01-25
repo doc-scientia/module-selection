@@ -1,0 +1,10 @@
+[flake8]
+# W503: line break before binary operator
+# E501: line too long
+# H202: assertRaises Exception too broad
+# H306: imports not in alphabetical order (time, os)
+# W292: no newline at the end of file
+# F821: undefined name
+ignore = W292,W503,H202,H306,E501,F821
+extend_exclude = venv/,__pycache__,.ini
+per-file-ignores = tests/conftest.py:E402
