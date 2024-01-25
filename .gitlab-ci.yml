@@ -1,13 +1,108 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+image: python:3.10.4
+
 stages:
-- test
-sast:
-  stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+  - linting
+  - testing
+  - building
+
+before_script:
+  - apt-get update
+  - apt install -y libldap2-dev libsasl2-dev ldap-utils
+  - pip install --upgrade pip && pip install -r requirements.txt
+
+imports ordering:
+  stage: linting
+  interruptible: true
+  except:
+    refs:
+      - schedules
+    changes:
+      - "**/README.md"
+      - "cate-proxy-db/*"
+
+  script:
+    - isort *.py {app,tests}/**/*.py --check-only
+
+style checks:
+  stage: linting
+  interruptible: true
+  except:
+    refs:
+      - schedules
+    changes:
+      - "**/README.md"
+      - "cate-proxy-db/*"
+  script:
+    - flake8 .
+
+type checks:
+  stage: linting
+  interruptible: true
+  except:
+    refs:
+      - schedules
+    changes:
+      - "**/README.md"
+      - "cate-proxy-db/*"
+  script:
+    - mypy .
+
+unit_test:
+  stage: testing
+  interruptible: true
+  except:
+    refs:
+      - schedules
+    changes:
+      - "**/README.md"
+      - "cate-proxy-db/*"
+  services:
+    - name: postgres
+      alias: db-service
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    POSTGRES_USER: "user"
+    POSTGRES_PASSWORD: "pass"
+    TEST_DB_SERVER_URL: "postgresql://user:pass@db-service"
+  cache:
+    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .cache/pip
+  script:
+    - pytest --junitxml=report.xml --cov=app/ --cov-report term-missing tests/
+    - coverage xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+
+build docker image:
+  image: docker:latest
+  stage: building
+  interruptible: true
+  except:
+    changes:
+      - "**/README.md"
+  only:
+    - master
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  tags:
+    - docker
+  services:
+    - docker:dind
+  before_script: []
+  script:
+    - >
+        docker build
+        -t $CI_REGISTRY_IMAGE:latest
+        --cache-from $CI_REGISTRY_IMAGE:latest
+        .
+    - docker tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
