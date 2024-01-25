@@ -13,7 +13,7 @@ def get_status(
     settings: Settings = Depends(get_settings),
 ):
     return {
-        "status": "Tutoring alive",
+        "status": "Module Subscriptions alive",
         "version": request.app.version,
         "environment": settings.environment,
         "testing": settings.testing,

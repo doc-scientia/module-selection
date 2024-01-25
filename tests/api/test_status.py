@@ -17,7 +17,7 @@ def test_status_reports_correct_information(app):
     res: Response = TestClient(app).get("/status")  # type: ignore
     assert res.status_code == 200
     assert res.json() == {
-        "status": "Tutoring alive",
+        "status": "Module Subscriptions alive",
         "version": version,
         "environment": env,
         "testing": testing,
