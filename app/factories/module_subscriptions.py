@@ -6,7 +6,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
 from app.dependencies import get_session
-from app.schemas import Module, Enrolment
+from app.schemas import Enrolment, Module
 
 
 class ModuleFactory(SQLAlchemyModelFactory):
@@ -18,8 +18,9 @@ class ModuleFactory(SQLAlchemyModelFactory):
     module_code: str = factory.Faker(
         "pystr_format", string_format="#####", letters=string.ascii_lowercase
     )
-    #todo:  year: str = factory.Faker("short_year")
+    # todo:  year: str = factory.Faker("short_year")
     year: str = "2324"
+
 
 class EnrolmentFactory(SQLAlchemyModelFactory):
     class Meta:

@@ -1,4 +1,5 @@
 import os
+
 from sqlmodel import create_engine
 
 DEV_URL = "postgresql://user:pass@localhost"
