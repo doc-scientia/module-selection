@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.modules import module_router
 from app.api.router import api_router
 
 tags_metadata = [
@@ -26,5 +27,6 @@ def create_application() -> FastAPI:
         docs_url="/",
     )
     rest_api.include_router(api_router)
+    rest_api.include_router(module_router)
 
     return rest_api
