@@ -1,5 +1,4 @@
-from datetime import date, datetime
-from enum import Enum
+from datetime import date
 
 from sqlmodel import Field, SQLModel
 

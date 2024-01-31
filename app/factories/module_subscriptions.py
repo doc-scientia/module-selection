@@ -1,6 +1,5 @@
 import string
 from datetime import date
-from enum import Enum
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory

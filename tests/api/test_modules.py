@@ -1,7 +1,7 @@
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from app.schemas import Enrolment
-from tests.conftest import ADUMBLE_CREDENTIALS, HPOTTER_CREDENTIALS
+from tests.conftest import HPOTTER_CREDENTIALS
 
 
 def test_student_can_get_subscribed_modules(client, module_factory, enrolment_factory):
