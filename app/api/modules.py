@@ -23,8 +23,8 @@ def subscribed_modules(
 
 
 def is_valid_combination(modules: list[int]):
-    ##Needs to be implemented according to logic for determining what is valid and what isn't
-    ##currently a placeholder for testing
+    # Needs to be implemented according to logic for determining what is valid and what isn't
+    # currently a placeholder for testing
     return len(modules) > 0
 
 
