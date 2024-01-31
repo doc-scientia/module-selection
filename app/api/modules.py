@@ -3,7 +3,7 @@ import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, delete, select
 
-from app.dependencies import get_current_user, get_session
+from app.dependencies import get_session
 from app.schemas.modules import Enrolment, Module
 
 module_router = APIRouter(prefix="/{year}")
@@ -37,10 +37,10 @@ async def submit_subscribed_modules(
         raise HTTPException(status_code=400, detail="Invalid Module Selection.")
 
     session.exec(
-        delete(Enrolment).where(Enrolment.student_username == student_username)
+        delete(Enrolment).where(Enrolment.student_username == student_username)  # type: ignore
     )
     modules_to_subscribe_to = session.exec(
-        select(Module).where(Module.module_code.in_(module_codes))
+        select(Module).where(Module.module_code.in_(module_codes))  # type: ignore
     ).all()
 
     new_modules = []
