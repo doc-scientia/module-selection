@@ -8,9 +8,7 @@ def test_student_can_get_subscribed_modules(client, module_factory, enrolment_fa
     module = module_factory()
     enrolment_factory(module=module.id, student_username="hpotter")
     with client:
-        res = client.get(
-            f"/{module.year}/subscribed_modules/hpotter", auth=HPOTTER_CREDENTIALS
-        )
+        res = client.get(f"/{module.year}/subscribed_modules", auth=HPOTTER_CREDENTIALS)
     assert res.status_code == 200
     assert len(res.json()) == 1
     assert res.json()[0] == module.module_code
@@ -22,7 +20,7 @@ def test_student_can_select_valid_module_selection(client, module_factory, sessi
 
     with client:
         res = client.post(
-            f"/{2223}/subscribed_modules/hpotter",
+            f"/{2223}/subscribed_modules",
             auth=HPOTTER_CREDENTIALS,
             json={"module_codes": module_codes},
         )
@@ -42,7 +40,7 @@ def test_student_cannot_select_invalid_module_selection(client):
     modules = []
     with client:
         res = client.post(
-            f"/{2223}/subscribed_modules/hpotter",
+            f"/{2223}/subscribed_modules",
             auth=HPOTTER_CREDENTIALS,
             json={"module_codes": modules},
         )
