@@ -14,7 +14,7 @@ def test_student_can_get_subscribed_modules(client, module_factory, enrolment_fa
     assert res.json()[0] == module.module_code
 
 
-def test_student_can_select_valid_module_selection(client, module_factory, session):
+def test_student_can_submit_valid_module_selection(client, module_factory, session):
     modules = module_factory.create_batch(size=5)
     module_codes = [m.module_code for m in modules]
 
