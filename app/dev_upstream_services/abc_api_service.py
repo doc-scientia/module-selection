@@ -71,13 +71,23 @@ class DummyAbcAPIService(AbcUpstreamService):
                     "cohort": "r6",
                 }
             ],
+            "hpotter": [
+                {
+                    "login": "hpotter",
+                    "firstname": "Harry",
+                    "lastname": "Potter",
+                    "email_address": "hpotter@imperial.ac.uk",
+                    "salutation": "Dr",
+                    "year": "2223",
+                    "role_in_department": "phd",
+                    "cohort": "r6",
+                }
+            ],
         }
 
         return UpstreamResponse(
             response=DummyResponse(
-                content=json.dumps(
-                    FAKE_PHD_STUDENT[proxied_user] if proxied_user else []
-                )
+                content=json.dumps(FAKE_PHD_STUDENT[login] if not proxied_user else [])
             )
         )
 

@@ -3,7 +3,8 @@ import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, delete, select
 
-from app.dependencies import get_current_user, get_session
+from app.dependencies import get_abc_service_handler, get_current_user, get_session
+from app.protocols import AbcUpstreamService
 from app.schemas.modules import Enrolment, Module
 
 module_router = APIRouter(prefix="/{year}")
@@ -34,9 +35,11 @@ def is_valid_combination(modules: list[int]):
     response_model=list[str],
 )
 async def submit_subscribed_modules(
-    request: Request,
-    session: Session = Depends(get_session),
-    current_user: str = Depends(get_current_user),
+        request: Request,
+        session: Session = Depends(get_session),
+        current_user: str = Depends(get_current_user),
+        # abc=Depends(verify_user_is_student)
+        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ):
     data = await request.json()
     module_codes = data["module_codes"]
@@ -64,9 +67,3 @@ async def submit_subscribed_modules(
     session.commit()
 
     return new_modules
-
-
-@module_router.get("/all_modules", tags=["all_modules"], response_model=list[Module])
-def all_modules(year, session: Session = Depends(get_session)):
-    query = select(Module).where(Module.year == year)
-    return session.exec(query).all()

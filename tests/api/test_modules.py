@@ -47,13 +47,3 @@ def test_student_cannot_select_invalid_module_selection(client):
 
     assert res.status_code == 400
     assert res.json()["detail"] == "Invalid Module Selection."
-
-
-def test_all_modules_for_year_can_be_retrieved(client, module_factory):
-    modules = module_factory.create_batch(size=10, year="2223")
-    with client:
-        res = client.get(f"/{2223}/all_modules", auth=HPOTTER_CREDENTIALS)
-
-    assert res.status_code == 200
-    assert len(res.json()) == 10
-    assert [m["module_code"] for m in res.json()] == [m.module_code for m in modules]

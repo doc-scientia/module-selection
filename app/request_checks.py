@@ -22,10 +22,24 @@ def user_is_tutor_or_uta(
     return current_user in tutors | utas
 
 
+def user_is_student(
+        year: str,
+        current_user: str = Depends(get_current_user),
+        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+) -> bool:
+    abc_response = abc_api.get_student_info(year=year, login=current_user)
+    if not abc_response.is_ok:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The downstream ABC service returned an invalid response. You cannot access this resource at this time",
+        )
+    return len(abc_response.json_content) > 0
+
+
 def user_is_staff(
-    year: str,
-    current_user: str = Depends(get_current_user),
-    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+        year: str,
+        current_user: str = Depends(get_current_user),
+        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ) -> bool:
     abc_response = abc_api.get_staff_info(year=year, login=current_user)
     if not abc_response.is_ok:
@@ -72,12 +86,24 @@ def verify_user_is_tutor_or_uta(
 
 
 def verify_user_is_staff(
-    year: str,
-    current_user: str = Depends(get_current_user),
-    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+        year: str,
+        current_user: str = Depends(get_current_user),
+        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ):
     if not user_is_staff(year, current_user, abc_api):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot access this resource.",
+        )
+
+
+def verify_user_is_student(
+        year: str,
+        current_user: str = Depends(get_current_user),
+        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+):
+    if not user_is_student(year, current_user, abc_api):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not permitted to select modules.",
         )
