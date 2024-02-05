@@ -1,13 +1,17 @@
 import datetime
 
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, delete, select
+
 
 from app.dependencies import get_abc_service_handler, get_current_user, get_session
 from app.protocols import AbcUpstreamService
 from app.schemas.modules import Enrolment, Module
 
+
 module_router = APIRouter(prefix="/{year}")
+
 
 
 @module_router.get(
