@@ -14,3 +14,10 @@ class Enrolment(SQLModel, table=True):
 
 class ModuleSubscription(SQLModel):
     module_code: str
+
+
+class EnrolmentRead(SQLModel):
+    student_username: str = Field(nullable=False)
+    module_code: str = Field(nullable=False)
+    enrolment_type: str = Field(nullable=False)
+    timestamp: datetime = Field(nullable=False, default_factory=datetime.utcnow)

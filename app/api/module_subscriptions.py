@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, delete, select
 
 from app.dependencies import get_current_user, get_session
-from app.schemas.enrolments import Enrolment, ModuleSubscription
+from app.schemas.enrolments import Enrolment, ModuleSubscription, EnrolmentRead
 
 module_router = APIRouter(prefix="/{year}")
 
@@ -31,7 +31,7 @@ def is_valid_combination(modules: list[str]):
 @module_router.post(
     "/subscribed_modules",
     tags=["module subscriptions"],
-    response_model=list[ModuleSubscription],
+    response_model=list[EnrolmentRead],
 )
 async def submit_subscribed_modules(
         subscriptions: list[ModuleSubscription],
@@ -46,7 +46,7 @@ async def submit_subscribed_modules(
         delete(Enrolment).where(Enrolment.student_username == current_user)  # type: ignore
     )
 
-    new_modules = []
+    new_enrolments = []
     for module_code in module_codes:
         new_enrolment = Enrolment(
             student_username=current_user,
@@ -56,8 +56,8 @@ async def submit_subscribed_modules(
             year='2324'
         )
         session.add(new_enrolment)
-        new_modules.append(new_enrolment.module_code)
+        new_enrolments.append(new_enrolment)
 
     session.commit()
 
-    return [ModuleSubscription(module_code=module) for module in new_modules]
+    return new_enrolments

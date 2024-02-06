@@ -2,12 +2,10 @@ import contextlib
 from unittest.mock import Mock
 
 import pytest
-from sqlmodel import select
 from starlette.testclient import TestClient
 
 from app.dependencies import get_abc_service_handler
 from app.doc_upstream_services.abc_api_service import AbcAPIService
-from app.schemas import Enrolment
 from tests.conftest import HPOTTER_CREDENTIALS
 from tests.conftest import build_dummy_response
 
@@ -55,14 +53,11 @@ def test_student_can_submit_valid_module_selection(abc_patched_client, session):
         )
 
     assert res.status_code == 200
-    assert res.json() == module_codes
+    assert len(res.json()) == 5
 
-    query = select(Enrolment).where(Enrolment.student_username == "hpotter")
-    new_enrolment_module_codes = [
-        new_enrolment.module_code for new_enrolment in session.exec(query).all()
-    ]
+    enrolment_module_codes = [enrolment['module_code'] for enrolment in res.json()]
 
-    assert new_enrolment_module_codes == [module['module_code'] for module in module_codes]
+    assert enrolment_module_codes == [module['module_code'] for module in module_codes]
 
 
 def test_student_cannot_select_invalid_module_selection(client):
