@@ -3,8 +3,7 @@ import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, delete, select
 
-from app.dependencies import get_abc_service_handler, get_current_user, get_session
-from app.protocols import AbcUpstreamService
+from app.dependencies import get_current_user, get_session
 from app.schemas.modules import Enrolment, Module
 
 module_router = APIRouter(prefix="/{year}")
@@ -37,8 +36,6 @@ async def submit_subscribed_modules(
         request: Request,
         session: Session = Depends(get_session),
         current_user: str = Depends(get_current_user),
-        # abc=Depends(verify_user_is_student)
-        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ):
     data = await request.json()
     module_codes = data["module_codes"]
