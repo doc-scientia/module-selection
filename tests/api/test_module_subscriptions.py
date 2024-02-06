@@ -35,45 +35,42 @@ def abc_patched_client_fixture(app):
     return _abc_patched_client_fixture
 
 
-def test_student_can_get_subscribed_modules(abc_patched_client, module_factory, enrolment_factory):
-    module = module_factory()
-    enrolment_factory(module=module.id, student_username="hpotter")
-    with  abc_patched_client() as client:
-        res = client.get(f"/{module.year}/subscribed_modules", auth=HPOTTER_CREDENTIALS)
+def test_student_can_get_subscribed_modules(abc_patched_client, enrolment_factory):
+    enrolment = enrolment_factory(student_username="hpotter")
+    with abc_patched_client() as client:
+        res = client.get(f"/{enrolment.year}/subscribed_modules", auth=HPOTTER_CREDENTIALS)
     assert res.status_code == 200
     assert len(res.json()) == 1
-    assert res.json()[0] == module.module_code
+    assert res.json()[0] == enrolment.module_code
 
 
-def test_student_can_submit_valid_module_selection(abc_patched_client, module_factory, session):
-    modules = module_factory.create_batch(size=5)
-    module_codes = [m.module_code for m in modules]
+def test_student_can_submit_valid_module_selection(abc_patched_client, session):
+    module_codes = [{"module_code": m} for m in ['70017', '77701', '90012', '90210', '77001']]
 
     with abc_patched_client() as client:
         res = client.post(
             f"/{2223}/subscribed_modules",
             auth=HPOTTER_CREDENTIALS,
-            json={"module_codes": module_codes},
+            json=module_codes,
         )
 
     assert res.status_code == 200
     assert res.json() == module_codes
 
     query = select(Enrolment).where(Enrolment.student_username == "hpotter")
-    new_enrolment_module_ids = [
-        new_enrolment.module for new_enrolment in session.exec(query).all()
+    new_enrolment_module_codes = [
+        new_enrolment.module_code for new_enrolment in session.exec(query).all()
     ]
 
-    assert new_enrolment_module_ids == [module.id for module in modules]
+    assert new_enrolment_module_codes == [module['module_code'] for module in module_codes]
 
 
 def test_student_cannot_select_invalid_module_selection(client):
-    modules = []
     with client:
         res = client.post(
             f"/{2223}/subscribed_modules",
             auth=HPOTTER_CREDENTIALS,
-            json={"module_codes": modules},
+            json=[],
         )
 
     assert res.status_code == 400

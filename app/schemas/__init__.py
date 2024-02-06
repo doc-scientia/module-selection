@@ -1,3 +1,3 @@
-from .modules import Enrolment, Module
+from .enrolments import Enrolment
 
-models = (Module, Enrolment)
+models = (Enrolment,)
