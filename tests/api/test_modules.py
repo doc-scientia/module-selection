@@ -1,16 +1,15 @@
-from sqlmodel import select
-
-from app.schemas import Enrolment
-from tests.conftest import HPOTTER_CREDENTIALS
-
 import contextlib
 from unittest.mock import Mock
-from app.doc_upstream_services.abc_api_service import AbcAPIService
+
 import pytest
+from sqlmodel import select
 from starlette.testclient import TestClient
-from tests.conftest import build_dummy_response
 
 from app.dependencies import get_abc_service_handler
+from app.doc_upstream_services.abc_api_service import AbcAPIService
+from app.schemas import Enrolment
+from tests.conftest import HPOTTER_CREDENTIALS
+from tests.conftest import build_dummy_response
 
 
 # TODO: CREATE FIXTURE abc_patched_client
@@ -46,7 +45,6 @@ def test_student_can_get_subscribed_modules(abc_patched_client, module_factory, 
     assert res.json()[0] == module.module_code
 
 
-# TODO: USE abc patched client
 def test_student_can_submit_valid_module_selection(abc_patched_client, module_factory, session):
     modules = module_factory.create_batch(size=5)
     module_codes = [m.module_code for m in modules]

@@ -8,7 +8,7 @@ tags_metadata = [
         "name": "status",
         "description": "API heartbeat",
     },
-    {"name": "module_subscriptions", "description": "Module Subscriptions"},
+    {"name": "module subscriptions", "description": "Module Subscriptions"},
 ]
 
 
