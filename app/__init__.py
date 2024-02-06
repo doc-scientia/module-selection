@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.modules import module_router
+from app.api.module_subscriptions import module_router
 from app.api.router import api_router
 
 tags_metadata = [
