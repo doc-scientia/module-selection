@@ -45,3 +45,7 @@ class ConfigurationRead(SQLModel):
     status: ModuleSelectionStatus
     degree_year: int
     periods: list[SelectionPeriodRead]
+
+
+class ConfigurationWrite(SQLModel):
+    status: ModuleSelectionStatus
