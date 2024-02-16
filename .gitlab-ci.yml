@@ -1,61 +1,126 @@
-image: python:3.10.4
+image: python:3.11.6
 
 stages:
+  - prepare
   - linting
   - testing
   - building
 
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  VENV_PATH: "$CI_PROJECT_DIR/.venv"
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
+  paths:
+    - $PIP_CACHE_DIR
+    - $VENV_PATH
+
 before_script:
   - apt-get update
   - apt install -y libldap2-dev libsasl2-dev ldap-utils
-  - pip install --upgrade pip && pip install -r requirements.txt
+
+cache dependencies:
+  stage: prepare
+  interruptible: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - ".gitlab-ci.yml"
+        - "*.py"
+        - "app/**/*"
+        - "migrations/**/*"
+        - "tests/**/*"
+        - "requirements.txt"
+  script:
+    - python -m venv $VENV_PATH
+    - source $VENV_PATH/bin/activate
+    - pip install --upgrade pip && pip install -r requirements.txt
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
+    paths:
+      - $PIP_CACHE_DIR
+      - $VENV_PATH
+    policy: push
 
 imports ordering:
   stage: linting
   interruptible: true
-  except:
-    refs:
-      - schedules
-    changes:
-      - "**/README.md"
-      - "cate-proxy-db/*"
-
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - ".gitlab-ci.yml"
+        - "*.py"
+        - "app/**/*"
+        - "migrations/**/*"
+        - "tests/**/*"
+        - "requirements.txt"
   script:
+    - source $VENV_PATH/bin/activate
     - isort *.py {app,tests}/**/*.py --check-only
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
+    paths:
+      - $PIP_CACHE_DIR
+      - $VENV_PATH
+    policy: pull
 
 style checks:
   stage: linting
   interruptible: true
-  except:
-    refs:
-      - schedules
-    changes:
-      - "**/README.md"
-      - "cate-proxy-db/*"
+  rules:
+   - if: $CI_PIPELINE_SOURCE != "schedule"
+     changes:
+       - ".gitlab-ci.yml"
+       - "*.py"
+       - "app/**/*"
+       - "migrations/**/*"
+       - "tests/**/*"
+       - "requirements.txt"
   script:
-    - flake8 .
+    - source $VENV_PATH/bin/activate
+    - flake8 {app,tests}/**/*.py
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
+    paths:
+      - $PIP_CACHE_DIR
+      - $VENV_PATH
+    policy: pull
 
 type checks:
   stage: linting
   interruptible: true
-  except:
-    refs:
-      - schedules
-    changes:
-      - "**/README.md"
-      - "cate-proxy-db/*"
+  rules:
+   - if: $CI_PIPELINE_SOURCE != "schedule"
+     changes:
+       - ".gitlab-ci.yml"
+       - "*.py"
+       - "app/**/*"
+       - "migrations/**/*"
+       - "tests/**/*"
+       - "requirements.txt"
   script:
-    - mypy .
+    - source $VENV_PATH/bin/activate
+    - mypy {app,tests}/**/*.py
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
+    paths:
+      - $PIP_CACHE_DIR
+      - $VENV_PATH
+    policy: pull
 
 unit_test:
   stage: testing
   interruptible: true
-  except:
-    refs:
-      - schedules
-    changes:
-      - "**/README.md"
-      - "cate-proxy-db/*"
+  rules:
+   - if: $CI_PIPELINE_SOURCE != "schedule"
+     changes:
+       - ".gitlab-ci.yml"
+       - "*.py"
+       - "app/**/*"
+       - "migrations/**/*"
+       - "requirements.txt"
+       - "tests/**/*"
   services:
     - name: postgres
       alias: db-service
@@ -65,11 +130,14 @@ unit_test:
     POSTGRES_PASSWORD: "pass"
     TEST_DB_SERVER_URL: "postgresql://user:pass@db-service"
   cache:
-    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+    key: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHA}"
     paths:
-      - .cache/pip
+      - $PIP_CACHE_DIR
+      - $VENV_PATH
+    policy: pull
   script:
-    - pytest --junitxml=report.xml --cov=app/ --cov-report term-missing tests/
+    - source $VENV_PATH/bin/activate
+    - pytest --junitxml=report.xml --cov=app/ tests/
     - coverage xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
@@ -79,3 +147,34 @@ unit_test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+
+
+.build docker image:
+  image: docker:latest
+  stage: building
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - ".gitlab-ci.yml"
+        - "*.py"
+        - "app/**/*"
+        - "migrations/**/*"
+        - "*requirements.txt"
+        - "tests/**/*"
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  tags:
+    - docker
+  services:
+    - docker:dind
+  before_script: []
+  script:
+    - >
+        docker build
+        -t $CI_REGISTRY_IMAGE:latest
+        --cache-from $CI_REGISTRY_IMAGE:latest
+        .
+    - docker tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME

@@ -1,3 +1,3 @@
-# Module Subscriptions API
+# Module Selection API
 
 ...
