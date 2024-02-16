@@ -1,0 +1,21 @@
+services:
+  module_selection_api_postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=module_selection
+  module_selection_api:
+    image: module_selection
+    environment:
+      - DB_URL=postgresql://user:pass@module_selection_api_postgres/module_selection
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    ports:
+      - 5000:5000
+    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 5000
+    volumes:
+      - .:/module-selection
+    depends_on:
+      - module_selection_api_postgres
