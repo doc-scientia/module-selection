@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api.configuration import selection_configurations_router
 from app.api.module_subscriptions import module_router
 from app.api.router import api_router
 
@@ -9,6 +10,7 @@ tags_metadata = [
         "description": "API heartbeat",
     },
     {"name": "module subscriptions", "description": "Module Subscriptions"},
+    {"name": "configurations", "description": "Module Selection Configurations"},
 ]
 
 
@@ -29,5 +31,6 @@ def create_application() -> FastAPI:
     )
     rest_api.include_router(api_router)
     rest_api.include_router(module_router)
+    rest_api.include_router(selection_configurations_router)
 
     return rest_api
