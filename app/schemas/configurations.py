@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum, auto
 
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 
 class ModuleSelectionStatus(StrEnum):
@@ -27,9 +27,13 @@ class SelectionPeriod(SQLModel, table=True):
 class Configuration(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("degree_year", "year"),)
     id: int = Field(primary_key=True)
-    status: ModuleSelectionStatus = Field(nullable=False)
+    status: ModuleSelectionStatus = Field(
+        sa_column=Column(
+            Enum(ModuleSelectionStatus, name="module_selection_status"), nullable=False
+        )
+    )
     degree_year: int = Field(nullable=False)
-    year: str = Field(nullable=False)
+    year: str = Field(nullable=False, max_length=10)
     periods: list[SelectionPeriod] = Relationship(
         back_populates="configuration",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
