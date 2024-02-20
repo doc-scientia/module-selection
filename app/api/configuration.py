@@ -7,6 +7,9 @@ from app.schemas.configurations import (
     Configuration,
     ConfigurationRead,
     ConfigurationWrite,
+    SelectionPeriod,
+    SelectionPeriodRead,
+    SelectionPeriodWrite,
 )
 
 selection_configurations_router = APIRouter(
@@ -54,11 +57,14 @@ def update_module_selection_configuration(
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = select(Configuration).where(Configuration.id == configuration_id)
+    query = select(Configuration).where(
+        Configuration.id == configuration_id, Configuration.year == year
+    )
     configuration = session.exec(query).first()
     if not configuration:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module selection configuration not found",
         )
     patch_data = patch.dict(exclude_unset=True)
     for key, value in patch_data.items():
@@ -66,3 +72,29 @@ def update_module_selection_configuration(
     session.commit()
     session.refresh(configuration)
     return configuration
+
+
+@selection_configurations_router.post(
+    "/{configuration_id}/periods",
+    response_model=SelectionPeriodRead,
+)
+def update_module_selection_configuration(
+    year: str,
+    configuration_id: int,
+    payload: SelectionPeriodWrite,
+    session: Session = Depends(get_session),
+    current_user: str = Depends(get_current_user),
+):
+    query = select(Configuration).where(
+        Configuration.id == configuration_id, Configuration.year == year
+    )
+    configuration = session.exec(query).first()
+    if not configuration:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module selection configuration not found",
+        )
+    new_period = SelectionPeriod(**payload.dict(), configuration=configuration)
+    session.add(new_period)
+    session.commit()
+    return new_period

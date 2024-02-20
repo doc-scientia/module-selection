@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from app.utils.datetime import to_datetime_string
 from tests.conftest import HPOTTER_CREDENTIALS
 
 
@@ -38,9 +41,28 @@ def test_year_coordinator_can_patch_a_module_selection_configuration_status(
     configuration = configuration_factory()
     payload = {"status": "open"}
     res = client.patch(
-        f"/2324/configurations/{configuration.id}",
+        f"/{configuration.year}/configurations/{configuration.id}",
         json=payload,
         auth=HPOTTER_CREDENTIALS,
     )
     assert res.status_code == 200
     assert res.json()["status"] == payload["status"]
+
+
+def test_year_coordinator_can_post_a_new_module_selection_period(
+    client, configuration_factory
+):
+    configuration = configuration_factory()
+    payload = {
+        "start": to_datetime_string(datetime(2024, 3, 1, 14)),
+        "end": to_datetime_string(datetime(2024, 3, 15, 19)),
+    }
+    res = client.post(
+        f"/{configuration.year}/configurations/{configuration.id}/periods",
+        json=payload,
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 200
+    response = res.json()
+    assert response["start"] == payload["start"]
+    assert response["end"] == payload["end"]

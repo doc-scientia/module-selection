@@ -24,6 +24,18 @@ class SelectionPeriod(SQLModel, table=True):
     configuration: "Configuration" = Relationship(back_populates="periods")
 
 
+class SelectionPeriodRead(SQLModel):
+    id: int
+    start: datetime
+    end: datetime
+
+
+class SelectionPeriodWrite(SQLModel):
+    start: datetime
+    end: datetime
+
+
+# -----------------------------------------------
 class Configuration(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("degree_year", "year"),)
     id: int = Field(primary_key=True)
@@ -38,11 +50,6 @@ class Configuration(SQLModel, table=True):
         back_populates="configuration",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
-
-
-class SelectionPeriodRead(SQLModel):
-    start: datetime
-    end: datetime
 
 
 class ConfigurationRead(SQLModel):
