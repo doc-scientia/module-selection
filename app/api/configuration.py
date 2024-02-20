@@ -128,3 +128,36 @@ def delete_module_selection_period(
         )
     session.delete(period)
     session.commit()
+
+
+@selection_configurations_router.put(
+    "/{configuration_id}/periods/{period_id}", response_model=SelectionPeriodRead
+)
+def update_module_selection_period(
+    year: str,
+    configuration_id: int,
+    period_id: int,
+    payload: SelectionPeriodWrite,
+    session: Session = Depends(get_session),
+    current_user: str = Depends(get_current_user),
+):
+    query = (
+        select(SelectionPeriod)
+        .join(Configuration)
+        .where(
+            SelectionPeriod.id == period_id,
+            Configuration.id == configuration_id,
+            Configuration.year == year,
+        )
+    )
+    period = session.exec(query).first()
+    if not period:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module selection period not found.",
+        )
+    for key, value in payload.dict().items():
+        setattr(period, key, value)
+    session.commit()
+    session.refresh(period)
+    return period

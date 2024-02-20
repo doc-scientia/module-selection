@@ -83,7 +83,7 @@ def test_posting_a_new_module_selection_period_against_non_existing_configuratio
         "end": to_datetime_string(datetime(2024, 3, 15, 19)),
     }
     res = client.post(
-        f"/1234/configurations/1/periods",
+        "/1234/configurations/1/periods",
         json=payload,
         auth=HPOTTER_CREDENTIALS,
     )
@@ -159,6 +159,59 @@ def test_deleting_a_module_selection_period_for_the_wrong_year_gives_404(
     [period] = configuration.periods
     res = client.delete(
         f"/1234/configurations/{configuration.id}/periods/{period.id}",
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 404
+    assert res.json()["detail"] == "Module selection period not found."
+
+
+def test_year_coordinator_can_update_an_existing_module_selection_period(
+    client, configuration_factory
+):
+    payload = {
+        "start": to_datetime_string(datetime(2024, 3, 1, 14)),
+        "end": to_datetime_string(datetime(2024, 3, 15, 19)),
+    }
+    configuration = configuration_factory(with_periods=1)
+    [period] = configuration.periods
+    res = client.put(
+        f"/{configuration.year}/configurations/{configuration.id}/periods/{period.id}",
+        json=payload,
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 200
+    assert res.json()["start"] == payload["start"]
+    assert res.json()["end"] == payload["end"]
+
+
+def test_updating_a_module_selection_period_for_a_non_existing_configuration_gives_404(
+    client,
+):
+    payload = {
+        "start": to_datetime_string(datetime(2024, 3, 1, 14)),
+        "end": to_datetime_string(datetime(2024, 3, 15, 19)),
+    }
+    res = client.put(
+        "/1234/configurations/1/periods/1",
+        json=payload,
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 404
+    assert res.json()["detail"] == "Module selection period not found."
+
+
+def test_updating_a_module_selection_period_for_the_wrong_year_gives_404(
+    client, configuration_factory
+):
+    payload = {
+        "start": to_datetime_string(datetime(2024, 3, 1, 14)),
+        "end": to_datetime_string(datetime(2024, 3, 15, 19)),
+    }
+    configuration = configuration_factory(with_periods=1)
+    [period] = configuration.periods
+    res = client.put(
+        f"/1234/configurations/{configuration.id}/periods/{period.id}",
+        json=payload,
         auth=HPOTTER_CREDENTIALS,
     )
     assert res.status_code == 404
