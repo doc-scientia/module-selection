@@ -20,7 +20,8 @@ def test_can_get_module_selection_configuration_by_degree_year(
 
 
 def test_can_get_module_selection_configurations(client, configuration_factory):
-    configuration_factory.create_batch(size=2, year="2324")
+    configuration_factory(year="2324", degree_year=3)
+    configuration_factory(year="2324", degree_year=4)
     res = client.get(
         "/2324/configurations",
         auth=HPOTTER_CREDENTIALS,
