@@ -5,7 +5,7 @@ from tests.conftest import HPOTTER_CREDENTIALS
 
 
 def test_can_get_module_selection_configuration_by_degree_year(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory(with_periods=1)
     res = client.get(
@@ -17,6 +17,15 @@ def test_can_get_module_selection_configuration_by_degree_year(
     assert response["degree_year"] == configuration.degree_year
     assert response["status"] == configuration.status
     assert len(response["periods"]) == 1
+
+
+def test_getting_a_non_existing_module_selection_configuration_by_degree_year_gives_404(client):
+    res = client.get(
+        "/1234/configurations/1",
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 404
+    assert res.json()["detail"] == "Module selection configuration not found."
 
 
 def test_can_get_module_selection_configurations(client, configuration_factory):
@@ -31,13 +40,13 @@ def test_can_get_module_selection_configurations(client, configuration_factory):
 
 
 def test_non_year_coordinator_patching_a_configuration_gets_403(
-    client, configuration_factory
+        client, configuration_factory
 ):
     pass
 
 
 def test_year_coordinator_can_patch_a_module_selection_configuration_status(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory()
     payload = {"status": "open"}
@@ -62,7 +71,7 @@ def test_patch_a_non_existing_module_selection_configuration_gives_404(client):
 
 
 def test_patch_a_module_selection_configuration_for_the_wrong_year_gives_404(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory()
     payload = {"status": "open"}
@@ -77,7 +86,7 @@ def test_patch_a_module_selection_configuration_for_the_wrong_year_gives_404(
 
 
 def test_posting_a_new_module_selection_period_against_non_existing_configuration_gives_404(
-    client,
+        client,
 ):
     payload = {
         "start": to_datetime_string(datetime(2024, 3, 1, 14)),
@@ -93,7 +102,7 @@ def test_posting_a_new_module_selection_period_against_non_existing_configuratio
 
 
 def test_posting_a_new_module_selection_period_against_wrong_year_gives_404(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory()
     payload = {
@@ -110,7 +119,7 @@ def test_posting_a_new_module_selection_period_against_wrong_year_gives_404(
 
 
 def test_year_coordinator_can_post_a_new_module_selection_period(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory()
     payload = {
@@ -129,7 +138,7 @@ def test_year_coordinator_can_post_a_new_module_selection_period(
 
 
 def test_year_coordinator_can_delete_an_existing_module_selection_period(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory(with_periods=1)
     [period] = configuration.periods
@@ -143,7 +152,7 @@ def test_year_coordinator_can_delete_an_existing_module_selection_period(
 
 
 def test_deleting_a_module_selection_period_for_a_non_existing_configuration_gives_404(
-    client,
+        client,
 ):
     res = client.delete(
         "/1234/configurations/1/periods/1",
@@ -154,7 +163,7 @@ def test_deleting_a_module_selection_period_for_a_non_existing_configuration_giv
 
 
 def test_deleting_a_module_selection_period_for_the_wrong_year_gives_404(
-    client, configuration_factory
+        client, configuration_factory
 ):
     configuration = configuration_factory(with_periods=1)
     [period] = configuration.periods
@@ -167,7 +176,7 @@ def test_deleting_a_module_selection_period_for_the_wrong_year_gives_404(
 
 
 def test_year_coordinator_can_update_an_existing_module_selection_period(
-    client, configuration_factory
+        client, configuration_factory
 ):
     payload = {
         "start": to_datetime_string(datetime(2024, 3, 1, 14)),
@@ -186,7 +195,7 @@ def test_year_coordinator_can_update_an_existing_module_selection_period(
 
 
 def test_updating_a_module_selection_period_for_a_non_existing_configuration_gives_404(
-    client,
+        client,
 ):
     payload = {
         "start": to_datetime_string(datetime(2024, 3, 1, 14)),
@@ -202,7 +211,7 @@ def test_updating_a_module_selection_period_for_a_non_existing_configuration_giv
 
 
 def test_updating_a_module_selection_period_for_the_wrong_year_gives_404(
-    client, configuration_factory
+        client, configuration_factory
 ):
     payload = {
         "start": to_datetime_string(datetime(2024, 3, 1, 14)),

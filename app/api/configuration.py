@@ -44,7 +44,14 @@ def get_module_selection_configuration(
     query = select(Configuration).where(
         Configuration.year == year, Configuration.degree_year == degree_year
     )
-    return session.exec(query).first()
+
+    configuration = session.exec(query).first()
+    if not configuration:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module selection configuration not found.",
+        )
+    return configuration
 
 
 @selection_configurations_router.patch(
