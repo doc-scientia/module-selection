@@ -1,6 +1,6 @@
 import multiprocessing
 
-bind = "0.0.0.0:5003"
+bind = "0.0.0.0:5004"
 workers = multiprocessing.cpu_count() * 2 + 1
 worker_class = "uvicorn.workers.UvicornWorker"
 timeout = 60 * 12
