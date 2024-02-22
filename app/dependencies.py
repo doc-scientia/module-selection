@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from fastapi import Depends, Header, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 from starlette import status
 
@@ -35,7 +36,12 @@ ASSESSOR: str = "ASSESSOR"
 
 def get_session() -> Session:
     with Session(engine) as s:
-        return s
+        try:
+            yield s
+            s.commit()
+        except SQLAlchemyError as e:
+            s.rollback()
+            raise e
 
 
 @lru_cache()
