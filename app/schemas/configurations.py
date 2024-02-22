@@ -53,6 +53,7 @@ class Configuration(SQLModel, table=True):
 
 
 class ConfigurationRead(SQLModel):
+    id: int
     status: ModuleSelectionStatus
     degree_year: int
     periods: list[SelectionPeriodRead]
