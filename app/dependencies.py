@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Generator
 
 from fastapi import Depends, Header, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -34,7 +35,7 @@ SUPERVISOR: str = "SUPERVISOR"
 ASSESSOR: str = "ASSESSOR"
 
 
-def get_session() -> Session:
+def get_session() -> Generator[Session, None, None]:
     with Session(engine) as s:
         try:
             yield s

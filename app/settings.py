@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     environment: str = os.getenv("ENVIRONMENT", "development")
     testing: bool = bool(os.getenv("TESTING", 0))
-    redis_url = os.getenv("REDIS_URL", "redis:///")
 
     api_role_username: str = os.getenv("API_ROLE_USERNAME", "api-role-user")
     api_role_password: str = os.getenv("API_ROLE_PASSWORD", "api-role-password")
