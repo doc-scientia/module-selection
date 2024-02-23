@@ -149,7 +149,7 @@ unit_test:
         path: coverage.xml
 
 
-.build docker image:
+build docker image:
   image: docker:latest
   stage: building
   interruptible: true
