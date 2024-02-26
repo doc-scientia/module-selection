@@ -6,7 +6,6 @@ from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 
 class ModuleSelectionStatus(StrEnum):
-    OPEN = auto()
     CLOSED = auto()
     USE_PERIODS = auto()
 

@@ -37,7 +37,7 @@ def test_year_coordinator_can_patch_a_module_selection_configuration_status(
     client, configuration_factory
 ):
     configuration = configuration_factory()
-    payload = {"status": "open"}
+    payload = {"status": "use_periods"}
     res = client.patch(
         f"/{configuration.year}/configuration",
         json=payload,
@@ -48,7 +48,7 @@ def test_year_coordinator_can_patch_a_module_selection_configuration_status(
 
 
 def test_patch_a_non_existing_module_selection_configuration_gives_404(client):
-    payload = {"status": "open"}
+    payload = {"status": "use_periods"}
     res = client.patch(
         "/1234/configuration",
         json=payload,
@@ -62,7 +62,7 @@ def test_patch_a_module_selection_configuration_for_the_wrong_year_gives_404(
     client, configuration_factory
 ):
     configuration = configuration_factory()
-    payload = {"status": "open"}
+    payload = {"status": "use_periods"}
     res = client.patch(
         f"/1234/configuration",
         json=payload,
