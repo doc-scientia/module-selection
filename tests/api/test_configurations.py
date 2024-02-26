@@ -61,10 +61,10 @@ def test_patch_a_non_existing_module_selection_configuration_gives_404(client):
 def test_patch_a_module_selection_configuration_for_the_wrong_year_gives_404(
     client, configuration_factory
 ):
-    configuration = configuration_factory()
+    configuration_factory()
     payload = {"status": "use_periods"}
     res = client.patch(
-        f"/1234/configuration",
+        "/1234/configuration",
         json=payload,
         auth=HPOTTER_CREDENTIALS,
     )
@@ -91,13 +91,13 @@ def test_posting_a_new_module_selection_period_against_non_existing_configuratio
 def test_posting_a_new_module_selection_period_against_wrong_year_gives_404(
     client, configuration_factory
 ):
-    configuration = configuration_factory()
+    configuration_factory()
     payload = {
         "start": to_datetime_string(datetime(2024, 3, 1, 14)),
         "end": to_datetime_string(datetime(2024, 3, 15, 19)),
     }
     res = client.post(
-        f"/1234/configuration/periods",
+        "/1234/configuration/periods",
         json=payload,
         auth=HPOTTER_CREDENTIALS,
     )
