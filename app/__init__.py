@@ -10,7 +10,7 @@ tags_metadata = [
         "description": "API heartbeat",
     },
     {"name": "module subscriptions", "description": "Module Subscriptions"},
-    {"name": "configurations", "description": "Module Selection Configurations"},
+    {"name": "configuration", "description": "Module Selection Configuration"},
 ]
 
 
