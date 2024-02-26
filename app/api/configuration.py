@@ -13,37 +13,21 @@ from app.schemas.configurations import (
     SelectionPeriodWrite,
 )
 
-selection_configurations_router = APIRouter(
-    prefix="/{year}/configurations", tags=["configurations"]
+module_selection_configuration = APIRouter(
+    prefix="/{year}/configuration", tags=["configuration"]
 )
 
 
-@selection_configurations_router.get(
+@module_selection_configuration.get(
     "",
-    response_model=list[ConfigurationRead],
+    response_model=ConfigurationRead,
 )
-def get_module_selection_configurations(
+def get_module_selection_configuration(
     year: str,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
     query = select(Configuration).where(Configuration.year == year)
-    return session.exec(query).all()
-
-
-@selection_configurations_router.get(
-    "/{degree_year}",
-    response_model=ConfigurationRead,
-)
-def get_module_selection_configuration(
-    year: str,
-    degree_year: int,
-    session: Session = Depends(get_session),
-    current_user: str = Depends(get_current_user),
-):
-    query = select(Configuration).where(
-        Configuration.year == year, Configuration.degree_year == degree_year
-    )
 
     configuration = session.exec(query).first()
     if not configuration:
@@ -54,20 +38,17 @@ def get_module_selection_configuration(
     return configuration
 
 
-@selection_configurations_router.patch(
-    "/{configuration_id}",
+@module_selection_configuration.patch(
+    "",
     response_model=ConfigurationRead,
 )
 def update_module_selection_configuration(
     year: str,
-    configuration_id: int,
     patch: ConfigurationWrite,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = select(Configuration).where(
-        Configuration.id == configuration_id, Configuration.year == year
-    )
+    query = select(Configuration).where(Configuration.year == year)
     configuration = session.exec(query).first()
     if not configuration:
         raise HTTPException(
@@ -82,20 +63,17 @@ def update_module_selection_configuration(
     return configuration
 
 
-@selection_configurations_router.post(
-    "/{configuration_id}/periods",
+@module_selection_configuration.post(
+    "/periods",
     response_model=SelectionPeriodRead,
 )
 def add_new_module_selection_period(
     year: str,
-    configuration_id: int,
     payload: SelectionPeriodWrite,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = select(Configuration).where(
-        Configuration.id == configuration_id, Configuration.year == year
-    )
+    query = select(Configuration).where(Configuration.year == year)
     configuration = session.exec(query).first()
     if not configuration:
         raise HTTPException(
@@ -108,12 +86,11 @@ def add_new_module_selection_period(
     return new_period
 
 
-@selection_configurations_router.delete(
-    "/{configuration_id}/periods/{period_id}", status_code=204, response_class=Response
+@module_selection_configuration.delete(
+    "/periods/{period_id}", status_code=204, response_class=Response
 )
 def delete_module_selection_period(
     year: str,
-    configuration_id: int,
     period_id: int,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
@@ -123,7 +100,6 @@ def delete_module_selection_period(
         .join(Configuration)
         .where(
             SelectionPeriod.id == period_id,
-            Configuration.id == configuration_id,
             Configuration.year == year,
         )
     )
@@ -137,12 +113,11 @@ def delete_module_selection_period(
     session.commit()
 
 
-@selection_configurations_router.put(
-    "/{configuration_id}/periods/{period_id}", response_model=SelectionPeriodRead
+@module_selection_configuration.put(
+    "/periods/{period_id}", response_model=SelectionPeriodRead
 )
 def update_module_selection_period(
     year: str,
-    configuration_id: int,
     period_id: int,
     payload: SelectionPeriodWrite,
     session: Session = Depends(get_session),
@@ -153,7 +128,6 @@ def update_module_selection_period(
         .join(Configuration)
         .where(
             SelectionPeriod.id == period_id,
-            Configuration.id == configuration_id,
             Configuration.year == year,
         )
     )

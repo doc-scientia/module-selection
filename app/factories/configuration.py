@@ -32,7 +32,6 @@ class ConfigurationFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "commit"
 
     year: str = factory.Faker("short_year")
-    degree_year: int = factory.Faker("pyint", min_value=2, max_value=5)
     status: ModuleSelectionStatus = factory.Faker("selection_status")
 
     @factory.post_generation

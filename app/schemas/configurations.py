@@ -37,15 +37,14 @@ class SelectionPeriodWrite(SQLModel):
 
 # -----------------------------------------------
 class Configuration(SQLModel, table=True):
-    __table_args__ = (UniqueConstraint("degree_year", "year"),)
+    __table_args__ = (UniqueConstraint("year"),)
     id: int = Field(primary_key=True)
+    year: str = Field(nullable=False, max_length=10)
     status: ModuleSelectionStatus = Field(
         sa_column=Column(
             Enum(ModuleSelectionStatus, name="module_selection_status"), nullable=False
         )
     )
-    degree_year: int = Field(nullable=False)
-    year: str = Field(nullable=False, max_length=10)
     periods: list[SelectionPeriod] = Relationship(
         back_populates="configuration",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
@@ -55,7 +54,6 @@ class Configuration(SQLModel, table=True):
 class ConfigurationRead(SQLModel):
     id: int
     status: ModuleSelectionStatus
-    degree_year: int
     periods: list[SelectionPeriodRead]
 
 
