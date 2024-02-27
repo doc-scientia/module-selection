@@ -1,11 +1,13 @@
 from datetime import datetime
-from enum import StrEnum, auto
+from enum import auto
 
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
+from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
-class ModuleSelectionStatus(StrEnum):
+
+class ModuleSelectionStatus(SQLModelStrEnum):
     CLOSED = auto()
     USE_PERIODS = auto()
 
