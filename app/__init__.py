@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.configuration import module_selection_configuration
 from app.api.exernal_module_choices_review import external_module_choices_review_router
 from app.api.module_subscriptions import module_router
+from app.api.personal import personal_router
 from app.api.router import api_router
 
 tags_metadata = [
@@ -34,5 +35,6 @@ def create_application() -> FastAPI:
     rest_api.include_router(module_router)
     rest_api.include_router(module_selection_configuration)
     rest_api.include_router(external_module_choices_review_router)
+    rest_api.include_router(personal_router)
 
     return rest_api

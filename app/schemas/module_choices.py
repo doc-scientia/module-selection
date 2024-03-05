@@ -62,3 +62,7 @@ class ExternalModuleChoiceRead(SQLModel):
 
 class ExternalModuleChoiceUpdate(SQLModel):
     status: ModuleChoiceApprovalStatus
+
+
+class ExternalModuleChoiceWrite(SQLModel):
+    module_code: str
