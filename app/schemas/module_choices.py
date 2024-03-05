@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from enum import auto
 
 from sqlalchemy import DateTime, UniqueConstraint, func
-from sqlmodel import Column, Enum, Field, SQLModel
+from sqlmodel import ARRAY, Column, Enum, Field, Integer, SQLModel
 
 from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
@@ -66,3 +66,12 @@ class ExternalModuleChoiceUpdate(SQLModel):
 
 class ExternalModuleChoiceWrite(SQLModel):
     module_code: str
+
+
+class ExternalModuleOnOffer(SQLModel, table=True):
+    __tablename__ = "external_module_on_offer"
+    id: int = Field(primary_key=True)
+    title: str = Field(nullable=False)
+    code: str = Field(max_length=30, nullable=False)
+    terms: list[int] = Field(default=None, sa_column=Column(ARRAY(Integer())))
+    ects: int = Field(nullable=False)
