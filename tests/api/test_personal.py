@@ -2,9 +2,11 @@ from tests.conftest import HPOTTER_CREDENTIALS
 
 
 def test_student_can_get_own_external_module_choices(
-    client, external_module_choice_factory
+    client, external_module_on_offer_factory
 ):
-    external_module_choice_factory.create_batch(size=3, username="hpotter", year="2324")
+    external_module_on_offer_factory.create_batch(
+        size=3, year="2324", with_applications=[dict(username="hpotter")]
+    )
     res = client.get(
         "me/2324/external-modules/choices",
         auth=HPOTTER_CREDENTIALS,
@@ -13,28 +15,38 @@ def test_student_can_get_own_external_module_choices(
     assert len(res.json()) == 3
 
 
-def test_student_can_submit_valid_external_module_registration(client):
-    module_code = "70007"
+def test_student_can_submit_valid_external_module_registration(
+    client, external_module_on_offer_factory
+):
+    external_module = external_module_on_offer_factory()
     res = client.post(
-        "me/2324/external-modules/choices",
-        json={"module_code": module_code},
+        f"me/{external_module.year}/external-modules/choices",
+        json={"module_code": external_module.code},
         auth=HPOTTER_CREDENTIALS,
     )
     assert res.status_code == 200
-    module = res.json()
-    assert module["module_code"] == module_code
+    assert res.json()["external_module"]["id"] == external_module.id
 
 
-def test_student_cant_submit_module_reg_if_external_module_choice_exists(
-    client, external_module_choice_factory
-):
-    module_code = "70007"
-    external_module_choice_factory(
-        module_code=module_code, username="hpotter", year="2324"
-    )
+def test_student_cannot_apply_to_non_existing_external_module(client):
     res = client.post(
         "me/2324/external-modules/choices",
-        json={"module_code": module_code},
+        json={"module_code": "PHY263"},
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 404
+    assert res.json()["detail"] == "External module with code 'PHY263' not found."
+
+
+def test_student_cannot_apply_if_application_already_exists(
+    client, external_module_on_offer_factory
+):
+    external_module = external_module_on_offer_factory(
+        with_applications=[dict(username="hpotter")]
+    )
+    res = client.post(
+        f"me/{external_module.year}/external-modules/choices",
+        json={"module_code": external_module.code},
         auth=HPOTTER_CREDENTIALS,
     )
     assert res.status_code == 400

@@ -9,6 +9,7 @@ from app.schemas.module_choices import (
     ExternalModuleChoice,
     ExternalModuleChoiceRead,
     ExternalModuleChoiceUpdate,
+    ExternalModuleOnOffer,
 )
 
 external_module_choices_review_router = APIRouter(
@@ -27,8 +28,11 @@ def get_external_module_choices(
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = select(ExternalModuleChoice).where(ExternalModuleChoice.year == year)
-
+    query = (
+        select(ExternalModuleChoice)
+        .join(ExternalModuleOnOffer)
+        .where(ExternalModuleOnOffer.year == year)
+    )
     return session.exec(query).all()
 
 
@@ -43,8 +47,10 @@ def update_external_module_choice(
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = select(ExternalModuleChoice).where(
-        ExternalModuleChoice.year == year, ExternalModuleChoice.id == choice_id
+    query = (
+        select(ExternalModuleChoice)
+        .join(ExternalModuleOnOffer)
+        .where(ExternalModuleOnOffer.year == year, ExternalModuleChoice.id == choice_id)
     )
     choice = session.exec(query).first()
     if not choice:

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from enum import auto
 
 from sqlalchemy import DateTime, UniqueConstraint, func
-from sqlmodel import ARRAY, Column, Enum, Field, Integer, SQLModel
+from sqlmodel import ARRAY, Column, Enum, Field, Integer, Relationship, SQLModel
 
 from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
@@ -17,12 +17,32 @@ class ModuleChoiceApprovalStatus(SQLModelStrEnum):
         return [e.value for e in cls]
 
 
+class ExternalModuleOnOffer(SQLModel, table=True):
+    __tablename__ = "external_module_on_offer"
+    id: int = Field(primary_key=True)
+    year: str = Field(nullable=False)
+    title: str = Field(nullable=False)
+    code: str = Field(max_length=30, nullable=False)
+    terms: list[int] = Field(default=None, sa_column=Column(ARRAY(Integer())))
+    ects: int = Field(nullable=False)
+    applications: list["ExternalModuleChoice"] = Relationship(
+        back_populates="external_module",
+        sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
+    )
+
+
+class ExternalModuleRead(SQLModel):
+    id: int
+    title: str
+    code: str
+    terms: list[int]
+    ects: int
+
+
 class ExternalModuleChoice(SQLModel, table=True):
     __tablename__ = "external_module_choice"
-    __table_args__ = (UniqueConstraint("year", "module_code", "username"),)
+    __table_args__ = (UniqueConstraint("external_module_id", "username"),)
     id: int = Field(primary_key=True)
-    year: str = Field(max_length=10)
-    module_code: str
     timestamp: datetime = Field(
         sa_column=Column(
             DateTime,
@@ -40,12 +60,15 @@ class ExternalModuleChoice(SQLModel, table=True):
     )
     reviewed_on: datetime | None
     reviewed_by: str | None
+    external_module_id: int = Field(
+        index=True, foreign_key="external_module_on_offer.id"
+    )
+    external_module: ExternalModuleOnOffer = Relationship(back_populates="applications")
 
 
 class ExternalModuleChoiceRead(SQLModel):
     id: int
-    year: str
-    module_code: str
+    external_module: ExternalModuleRead
     timestamp: datetime
     username: str
     status: ModuleChoiceApprovalStatus
@@ -66,12 +89,3 @@ class ExternalModuleChoiceUpdate(SQLModel):
 
 class ExternalModuleChoiceWrite(SQLModel):
     module_code: str
-
-
-class ExternalModuleOnOffer(SQLModel, table=True):
-    __tablename__ = "external_module_on_offer"
-    id: int = Field(primary_key=True)
-    title: str = Field(nullable=False)
-    code: str = Field(max_length=30, nullable=False)
-    terms: list[int] = Field(default=None, sa_column=Column(ARRAY(Integer())))
-    ects: int = Field(nullable=False)
