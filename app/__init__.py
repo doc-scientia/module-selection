@@ -11,7 +11,19 @@ tags_metadata = [
         "name": "status",
         "description": "API heartbeat",
     },
-    {"name": "configuration", "description": "Module Selection Configuration"},
+    {
+        "name": "configuration",
+        "description": "Configuration of module selection periods",
+    },
+    {
+        "name": "external module choices review",
+        "description": "Approval/rejection of external module choices",
+    },
+    {
+        "name": "personal module choices",
+        "description": "Summary and update of personal module choices",
+    },
+    {"name": "on offer", "description": "List of modules on offer"},
 ]
 
 

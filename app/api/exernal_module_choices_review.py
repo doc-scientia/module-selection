@@ -14,7 +14,7 @@ from app.schemas.module_choices import (
 
 external_module_choices_review_router = APIRouter(
     prefix="/{year}/external-module-choices",
-    tags=["choices"],
+    tags=["external module choices review"],
     # dependencies=[Depends(verify_user_is_enrolments_admin)]  TODO: determine right role and implement this check
 )
 
