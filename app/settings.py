@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
+    server_url: str = os.getenv("SERVER_URL", "/")
     environment: str = os.getenv("ENVIRONMENT", "development")
     testing: bool = bool(os.getenv("TESTING", 0))
 

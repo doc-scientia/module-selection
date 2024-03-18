@@ -5,6 +5,7 @@ from app.api.exernal_module_choices_review import external_module_choices_review
 from app.api.modules_on_offer import modules_on_offer_router
 from app.api.personal import personal_router
 from app.api.router import api_router
+from app.settings import Settings
 
 tags_metadata = [
     {
@@ -39,6 +40,7 @@ def create_application() -> FastAPI:
             "url": "https://edtech.pages.doc.ic.ac.uk/",
             "email": "doc-edtech@ic.ac.uk",
         },
+        servers=[{"url": Settings().server_url, "description": Settings().environment}],
         openapi_tags=tags_metadata,
         docs_url="/",
     )
