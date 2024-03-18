@@ -38,7 +38,7 @@ def test_student_can_get_subscribed_modules(abc_patched_client, enrolment_factor
     enrolment = enrolment_factory(student_username="hpotter")
     with abc_patched_client() as client:
         res = client.get(
-            f"/{enrolment.year}/subscribed_modules", auth=HPOTTER_CREDENTIALS
+            f"/{enrolment.year}/selected-modules", auth=HPOTTER_CREDENTIALS
         )
     assert res.status_code == 200
     assert len(res.json()) == 1
@@ -52,7 +52,7 @@ def test_student_can_submit_valid_module_selection(abc_patched_client, session):
 
     with abc_patched_client() as client:
         res = client.post(
-            f"/{2223}/subscribed_modules",
+            f"/{2223}/selected-modules",
             auth=HPOTTER_CREDENTIALS,
             json=module_codes,
         )
@@ -68,7 +68,7 @@ def test_student_can_submit_valid_module_selection(abc_patched_client, session):
 def test_student_cannot_select_invalid_module_selection(client):
     with client:
         res = client.post(
-            f"/{2223}/subscribed_modules",
+            f"/{2223}/selected-modules",
             auth=HPOTTER_CREDENTIALS,
             json=[],
         )
