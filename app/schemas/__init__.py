@@ -5,6 +5,7 @@ from .internal_modules import (
     InternalModuleChoice,
     InternalModuleOnOffer,
 )
+from .offering_group import OfferingGroupConstraint
 
 models = (
     Configuration,
@@ -12,6 +13,7 @@ models = (
     ExternalModuleOnOffer,
     ExternalModuleChoice,
     InternalModuleOnOffer,
+    OfferingGroupConstraint,
     CohortRegulations,
     InternalModuleChoice,
 )

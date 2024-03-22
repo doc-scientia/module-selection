@@ -1,6 +1,6 @@
 import os
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -12,4 +12,4 @@ class Settings(BaseSettings):
     api_role_password: str = os.getenv("API_ROLE_PASSWORD", "api-role-password")
 
     # APIs entrypoints
-    abc_entrypoint = "https://abc-api.doc.ic.ac.uk"
+    abc_entrypoint: str = "https://abc-api.doc.ic.ac.uk"

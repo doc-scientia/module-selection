@@ -75,12 +75,12 @@ class ExternalModuleChoiceRead(SQLModel):
     reviewed_on: datetime | None
     reviewed_by: str | None
 
-    def dict(self, **kwargs):
-        obj_dict = super().dict(**kwargs)
-        for field in ["timestamp", "reviewed_on"]:
-            if current_value := getattr(self, field):
-                obj_dict[field] = current_value.replace(tzinfo=timezone.utc).isoformat()
-        return obj_dict
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat()
+            if dt
+            else None,
+        }
 
 
 class ExternalModuleChoiceUpdate(SQLModel):
