@@ -1,5 +1,4 @@
 from .configurations import Configuration, SelectionPeriod
-from .enrolments import Enrolment
 from .external_modules import ExternalModuleChoice, ExternalModuleOnOffer
 from .internal_modules import (
     CohortRegulations,
@@ -8,7 +7,6 @@ from .internal_modules import (
 )
 
 models = (
-    Enrolment,
     Configuration,
     SelectionPeriod,
     ExternalModuleOnOffer,

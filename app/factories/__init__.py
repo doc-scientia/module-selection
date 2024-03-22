@@ -12,10 +12,8 @@ from app.factories.internal_modules import (
     InternalModuleChoiceFactory,
     InternalModuleOnOfferFactory,
 )
-from app.factories.module_subscriptions import EnrolmentFactory
 
 all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
-    EnrolmentFactory,
     ConfigurationFactory,
     SelectionPeriodFactory,
     ExternalModuleChoiceFactory,
