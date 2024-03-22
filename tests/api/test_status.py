@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from requests import Response
 
-from app.dependencies import get_settings
+from app.dependencies.main import get_settings
 from app.settings import Settings
 
 

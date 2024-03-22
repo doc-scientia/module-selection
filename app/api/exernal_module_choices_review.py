@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from starlette import status
 
-from app.dependencies import get_current_user, get_session
-from app.schemas.module_choices import (
+from app.dependencies.main import get_current_user, get_session
+from app.schemas.external_modules import (
     ExternalModuleChoice,
     ExternalModuleChoiceRead,
     ExternalModuleChoiceUpdate,

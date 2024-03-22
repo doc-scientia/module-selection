@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from starlette import status
 from starlette.responses import Response
 
-from app.dependencies import get_current_user, get_session
+from app.dependencies.main import get_current_user, get_session
 from app.schemas.configurations import (
     Configuration,
     ConfigurationRead,

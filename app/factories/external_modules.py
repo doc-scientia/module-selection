@@ -1,11 +1,10 @@
 import string
-from datetime import datetime
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies import get_session
-from app.schemas.module_choices import ExternalModuleChoice, ExternalModuleOnOffer
+from app.dependencies.main import get_session
+from app.schemas.external_modules import ExternalModuleChoice, ExternalModuleOnOffer
 
 
 class ExternalModuleOnOfferFactory(SQLAlchemyModelFactory):
@@ -14,10 +13,10 @@ class ExternalModuleOnOfferFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
-    title: str = factory.Faker("job")
+    title: str = factory.Faker("sentence", nb_words=3)
     year: str = factory.Faker("short_year")
     code: str = factory.Faker(
-        "pystr_format", string_format="#####", letters=string.ascii_lowercase
+        "pystr_format", string_format="#####", letters=string.ascii_uppercase
     )
     terms: list[int] = [1, 2, 3]
     ects: int = factory.Faker("pyint", min_value=5, max_value=30)
@@ -46,7 +45,4 @@ class ExternalModuleChoiceFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
-    timestamp: datetime = factory.Faker(
-        "date_time_this_month", before_now=True, after_now=False
-    )
     username: str = factory.Faker("pystr_format", string_format="###???")

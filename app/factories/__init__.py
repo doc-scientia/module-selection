@@ -7,6 +7,11 @@ from app.factories.external_modules import (
     ExternalModuleChoiceFactory,
     ExternalModuleOnOfferFactory,
 )
+from app.factories.internal_modules import (
+    CohortRegulationsFactory,
+    InternalModuleChoiceFactory,
+    InternalModuleOnOfferFactory,
+)
 from app.factories.module_subscriptions import EnrolmentFactory
 
 all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
@@ -15,4 +20,7 @@ all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
     SelectionPeriodFactory,
     ExternalModuleChoiceFactory,
     ExternalModuleOnOfferFactory,
+    InternalModuleOnOfferFactory,
+    CohortRegulationsFactory,
+    InternalModuleChoiceFactory,
 ]

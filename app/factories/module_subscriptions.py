@@ -4,7 +4,7 @@ from datetime import date
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies import get_session
+from app.dependencies.main import get_session
 from app.schemas import Enrolment
 
 

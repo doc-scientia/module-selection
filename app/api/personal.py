@@ -1,12 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.dependencies import get_current_user, get_session
-from app.schemas.module_choices import (
+from app.dependencies.main import get_current_user, get_session
+from app.dependencies.preconditions import verify_module_selection_is_open
+from app.schemas.external_modules import (
     ExternalModuleChoice,
     ExternalModuleChoiceRead,
     ExternalModuleChoiceWrite,
     ExternalModuleOnOffer,
+)
+from app.schemas.internal_modules import (
+    CohortRegulations,
+    InternalModuleChoice,
+    InternalModuleChoiceRead,
+    InternalModuleChoiceWrite,
+    InternalModuleOnOffer,
 )
 
 personal_router = APIRouter(prefix="/me/{year}")
@@ -44,6 +52,7 @@ async def apply_for_external_module(
     subscription: ExternalModuleChoiceWrite,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
+    _: str = Depends(verify_module_selection_is_open),
 ):
     username = current_user
     module_code = subscription.module_code
@@ -71,3 +80,71 @@ async def apply_for_external_module(
     session.commit()
     session.refresh(new_subscription)
     return new_subscription
+
+
+@personal_router.get(
+    "/internal-modules/choices",
+    response_model=list[InternalModuleChoiceRead],
+    tags=["personal module choices"],
+)
+async def get_personal_internal_module_choices(
+    year: str,
+    session: Session = Depends(get_session),
+    current_user: str = Depends(get_current_user),
+):
+    username = current_user
+    query = (
+        select(InternalModuleChoice)
+        .join(CohortRegulations)
+        .join(InternalModuleOnOffer)
+        .where(
+            InternalModuleOnOffer.year == year,
+            InternalModuleChoice.username == username,
+        )
+    )
+    return session.exec(query).all()
+
+
+@personal_router.post(
+    "/internal-modules/choices",
+    response_model=InternalModuleChoiceRead,
+    tags=["personal module choices"],
+)
+async def apply_for_internal_module(
+    year: str,
+    selection: InternalModuleChoiceWrite,
+    session: Session = Depends(get_session),
+    current_user: str = Depends(get_current_user),
+    _: str = Depends(verify_module_selection_is_open),
+):
+    query = select(InternalModuleOnOffer).where(
+        InternalModuleOnOffer.year == year,
+        InternalModuleOnOffer.code == selection.module_code,
+    )
+    module = session.exec(query).first()
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Module with code '{selection.module_code}' not found.",
+        )
+    regulations = next(
+        (r for r in module.regulations if r.cohort == selection.cohort), None
+    )
+    if not regulations:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Module with code '{selection.module_code}' not offered to cohort '{selection.cohort}'.",
+        )
+
+    if next((e for e in regulations.enrollments if e.username == current_user), None):
+        raise HTTPException(
+            status_code=400, detail="You have already applied for this module."
+        )
+
+    new_enrollment = InternalModuleChoice(
+        username=current_user, cohort_regulations=regulations
+    )
+    session.add(new_enrollment)
+    session.commit()
+    session.refresh(new_enrollment)
+    return new_enrollment

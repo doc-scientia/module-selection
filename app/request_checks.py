@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from app.dependencies import get_abc_service_handler, get_current_user
+from app.dependencies.main import get_abc_service_handler, get_current_user
 from app.protocols import AbcUpstreamService
 
 
@@ -23,9 +23,9 @@ def user_is_tutor_or_uta(
 
 
 def user_is_student(
-        year: str,
-        current_user: str = Depends(get_current_user),
-        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+    year: str,
+    current_user: str = Depends(get_current_user),
+    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ) -> bool:
     abc_response = abc_api.get_student_info(year=year, login=current_user)
     if not abc_response.is_ok:
@@ -37,9 +37,9 @@ def user_is_student(
 
 
 def user_is_staff(
-        year: str,
-        current_user: str = Depends(get_current_user),
-        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+    year: str,
+    current_user: str = Depends(get_current_user),
+    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ) -> bool:
     abc_response = abc_api.get_staff_info(year=year, login=current_user)
     if not abc_response.is_ok:
@@ -86,9 +86,9 @@ def verify_user_is_tutor_or_uta(
 
 
 def verify_user_is_staff(
-        year: str,
-        current_user: str = Depends(get_current_user),
-        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+    year: str,
+    current_user: str = Depends(get_current_user),
+    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ):
     if not user_is_staff(year, current_user, abc_api):
         raise HTTPException(
@@ -98,9 +98,9 @@ def verify_user_is_staff(
 
 
 def verify_user_is_student(
-        year: str,
-        current_user: str = Depends(get_current_user),
-        abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
+    year: str,
+    current_user: str = Depends(get_current_user),
+    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
 ):
     if not user_is_student(year, current_user, abc_api):
         raise HTTPException(

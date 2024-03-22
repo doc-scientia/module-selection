@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from app.dependencies import get_settings
+from app.dependencies.main import get_settings
 from app.schemas.status import Status
 from app.settings import Settings
 

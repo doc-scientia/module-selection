@@ -68,7 +68,7 @@ class ExternalModuleChoice(SQLModel, table=True):
 
 class ExternalModuleChoiceRead(SQLModel):
     id: int
-    external_module: ExternalModuleRead
+    external_module_id: int
     timestamp: datetime
     username: str
     status: ModuleChoiceApprovalStatus

@@ -11,10 +11,6 @@ class ModuleSelectionStatus(SQLModelStrEnum):
     CLOSED = auto()
     USE_PERIODS = auto()
 
-    @classmethod
-    def members(cls) -> list[str]:
-        return [e.value for e in cls]
-
 
 class SelectionPeriod(SQLModel, table=True):
     __tablename__ = "selection_period"

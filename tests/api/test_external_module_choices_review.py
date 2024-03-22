@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 
-from app.schemas.module_choices import ModuleChoiceApprovalStatus
+from app.schemas.external_modules import ModuleChoiceApprovalStatus
 from tests.conftest import ADUMBLE_CREDENTIALS
 
 

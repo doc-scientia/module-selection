@@ -38,7 +38,7 @@ HARRY_POTTER_INFO = {
 mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
 
 from app import create_application, factories
-from app.dependencies import (
+from app.dependencies.main import (
     basic_auth,
     get_abc_service_handler,
     get_current_user,

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies import get_session
+from app.dependencies.main import get_session
 from app.factories.factory import factory
 from app.schemas.configurations import (
     Configuration,
