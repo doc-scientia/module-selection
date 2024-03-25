@@ -3,7 +3,6 @@ import string
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies.main import get_session
 from app.schemas.external_modules import ExternalModuleChoice, ExternalModuleOnOffer
 
 
