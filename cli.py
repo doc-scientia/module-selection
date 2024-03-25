@@ -2,6 +2,8 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 import typer
+from sqlalchemy import text
+from sqlmodel import SQLModel
 from typer import Argument
 
 from app.dependencies.main import get_session
@@ -25,7 +27,27 @@ def dynamic_session():
     yield
 
 
-@cli.command()
+@cli.command(name="erase_data")
+def erase_data():
+    """
+    WARNING: This command will erase all data from the tables without dropping the tables.
+    """
+    confirm = typer.confirm(
+        "Are you sure you want to erase all data from the tables? This action cannot be undone."
+    )
+    if confirm:
+        session = next(get_session())
+
+        # Iterate over all tables and delete data
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            session.execute(text(f"DELETE FROM {table.name}"))  # nosec
+        session.commit()
+        typer.echo("All data erased successfully.")
+    else:
+        typer.echo("Operation cancelled.")
+
+
+@cli.command(name="populate_db")
 def populate_db(
     year: str = Argument(help="Academic year in short form e.g. 2324 for 2023-2024"),
 ):
