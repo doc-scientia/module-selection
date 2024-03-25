@@ -2,7 +2,6 @@ from datetime import datetime
 
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies.main import get_session
 from app.factories.factory import factory
 from app.schemas.configurations import (
     Configuration,
@@ -14,7 +13,6 @@ from app.schemas.configurations import (
 class SelectionPeriodFactory(SQLAlchemyModelFactory):
     class Meta:
         model = SelectionPeriod
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     start: datetime = factory.Faker(
@@ -28,7 +26,6 @@ class SelectionPeriodFactory(SQLAlchemyModelFactory):
 class ConfigurationFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Configuration
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     year: str = factory.Faker("short_year")

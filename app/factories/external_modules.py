@@ -10,7 +10,6 @@ from app.schemas.external_modules import ExternalModuleChoice, ExternalModuleOnO
 class ExternalModuleOnOfferFactory(SQLAlchemyModelFactory):
     class Meta:
         model = ExternalModuleOnOffer
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     title: str = factory.Faker("sentence", nb_words=3)
@@ -42,7 +41,6 @@ class ExternalModuleOnOfferFactory(SQLAlchemyModelFactory):
 class ExternalModuleChoiceFactory(SQLAlchemyModelFactory):
     class Meta:
         model = ExternalModuleChoice
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     username: str = factory.Faker("pystr_format", string_format="###???")

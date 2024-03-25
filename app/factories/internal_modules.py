@@ -3,7 +3,6 @@ import string
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.dependencies.main import get_session
 from app.schemas.internal_modules import (
     CohortRegulations,
     InternalModuleChoice,
@@ -15,7 +14,6 @@ from app.schemas.internal_modules import (
 class InternalModuleOnOfferFactory(SQLAlchemyModelFactory):
     class Meta:
         model = InternalModuleOnOffer
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     title: str = factory.Faker("sentence", nb_words=3)
@@ -45,7 +43,6 @@ class InternalModuleOnOfferFactory(SQLAlchemyModelFactory):
 class CohortRegulationsFactory(SQLAlchemyModelFactory):
     class Meta:
         model = CohortRegulations
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     cohort: str = factory.Faker(
@@ -72,7 +69,6 @@ class CohortRegulationsFactory(SQLAlchemyModelFactory):
 class InternalModuleChoiceFactory(SQLAlchemyModelFactory):
     class Meta:
         model = InternalModuleChoice
-        sqlalchemy_session = get_session()
         sqlalchemy_session_persistence = "commit"
 
     username: str = factory.Faker("pystr_format", string_format="###???")
