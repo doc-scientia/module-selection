@@ -22,4 +22,5 @@ def is_within_offering_group_bounds(
         )
         .group_by(OfferingGroup.min, OfferingGroup.max)
     )
-    return bool(session.exec(query).first())
+    result = session.exec(query).first()
+    return True if result is None else result

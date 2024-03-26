@@ -98,11 +98,18 @@ def test_student_can_get_own_internal_module_choices(
 
 
 def test_student_can_select_valid_internal_module(
-    client, internal_module_on_offer_factory, open_module_selection
+    client,
+    internal_module_on_offer_factory,
+    offering_group_factory,
+    open_module_selection,
 ):
     cohort = "c3"
+    offering_group = offering_group_factory()
     internal_module = internal_module_on_offer_factory(
-        with_regulations=[dict(cohort=cohort)]
+        year=offering_group.year,
+        with_regulations=[
+            dict(cohort=cohort, offering_group=offering_group, ects=offering_group.min)
+        ],
     )
 
     with open_module_selection(internal_module.year):
@@ -114,6 +121,43 @@ def test_student_can_select_valid_internal_module(
     assert res.status_code == 200
     assert res.json()["cohort_regulations"]["cohort"] == cohort
     assert res.json()["cohort_regulations"]["module_id"] == internal_module.id
+
+
+def test_student_cannot_select_module_if_selection_violates_offering_group_constraint(
+    client,
+    internal_module_on_offer_factory,
+    offering_group_factory,
+    open_module_selection,
+):
+    cohort = "c3"
+    offering_group = offering_group_factory()
+    internal_module_on_offer_factory(
+        year=offering_group.year,
+        with_regulations=[
+            dict(
+                cohort=cohort,
+                offering_group=offering_group,
+                ects=offering_group.max,
+                with_enrollments=[dict(username=HPOTTER_CREDENTIALS.username)],
+            )
+        ],
+    )
+    internal_module = internal_module_on_offer_factory(
+        year=offering_group.year,
+        with_regulations=[dict(cohort=cohort, offering_group=offering_group)],
+    )
+
+    with open_module_selection(internal_module.year):
+        res = client.post(
+            f"me/{internal_module.year}/internal-modules/choices",
+            json={"module_code": internal_module.code, "cohort": cohort},
+            auth=HPOTTER_CREDENTIALS,
+        )
+    assert res.status_code == 400
+    assert (
+        res.json()["detail"]
+        == f"Your selection violates the maximum number of ects for {offering_group.label}."
+    )
 
 
 def test_student_cannot_select_non_existing_internal_module(

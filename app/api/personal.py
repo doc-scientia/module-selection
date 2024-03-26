@@ -143,10 +143,11 @@ async def apply_for_internal_module(
         )
 
     if not is_within_offering_group_bounds(
-        session, current_user, regulations.ects, regulations.offering_group
+        session, current_user, regulations.offering_group, regulations.ects
     ):
         raise HTTPException(
-            status_code=400, detail="You have already applied for this module."
+            status_code=400,
+            detail=f"Your selection violates the maximum number of ects for {regulations.offering_group.label}.",
         )
 
     new_enrollment = InternalModuleChoice(
