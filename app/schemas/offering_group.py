@@ -1,16 +1,16 @@
 from sqlalchemy import Column, Enum
 from sqlmodel import Field, SQLModel
 
-from app.schemas.internal_modules import OfferingGroup
+from app.schemas.internal_modules import OfferingGroupLabel
 
 
-class OfferingGroupConstraint(SQLModel, table=True):
-    __tablename__ = "offering_group_constraint"
+class OfferingGroup(SQLModel, table=True):
+    __tablename__ = "offering_group"
     id: int = Field(primary_key=True)
     year: str = Field(nullable=False)
-    offering_group: OfferingGroup = Field(
+    label: OfferingGroupLabel = Field(
         sa_column=Column(
-            Enum(OfferingGroup, name="offering_group_label"),
+            Enum(OfferingGroupLabel, name="offering_group_label"),
             nullable=False,
         )
     )

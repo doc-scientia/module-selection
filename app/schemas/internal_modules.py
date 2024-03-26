@@ -7,7 +7,7 @@ from sqlmodel import ARRAY, Column, Enum, Field, Integer, Relationship, SQLModel
 from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
 
-class OfferingGroup(SQLModelStrEnum):
+class OfferingGroupLabel(SQLModelStrEnum):
     OPTIONAL = auto()
     SELECTIVE = auto()
 
@@ -33,9 +33,9 @@ class CohortRegulations(SQLModel, table=True):
     ects: int = Field(nullable=False)
     exam_component: int = Field(nullable=False)
     cw_component: int = Field(nullable=False)
-    offering_group: OfferingGroup = Field(
+    offering_group: OfferingGroupLabel = Field(
         sa_column=Column(
-            Enum(OfferingGroup, name="offering_group_label"),
+            Enum(OfferingGroupLabel, name="offering_group_label"),
             nullable=False,
         )
     )
@@ -70,7 +70,7 @@ class CohortRegulationsRead(SQLModel):
     ects: int
     exam_component: int
     cw_component: int
-    offering_group: OfferingGroup
+    offering_group: OfferingGroupLabel
 
 
 class InternalModuleOnOfferRead(SQLModel):

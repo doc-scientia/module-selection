@@ -14,7 +14,7 @@ from app.factories import (
     all_factories,
 )
 from app.schemas.configurations import ModuleSelectionStatus
-from app.schemas.internal_modules import OfferingGroup
+from app.schemas.internal_modules import OfferingGroupLabel
 
 cli = typer.Typer()
 
@@ -65,15 +65,15 @@ def populate_db(
             size=5,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=OfferingGroup.OPTIONAL),
-                dict(cohort="v5", offering_group=OfferingGroup.SELECTIVE),
+                dict(cohort="c3", offering_group=OfferingGroupLabel.OPTIONAL),
+                dict(cohort="v5", offering_group=OfferingGroupLabel.SELECTIVE),
             ],
         )
         InternalModuleOnOfferFactory.create_batch(
             size=3,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=OfferingGroup.SELECTIVE),
+                dict(cohort="c3", offering_group=OfferingGroupLabel.SELECTIVE),
             ],
         )
     print("Database populated successfully.")

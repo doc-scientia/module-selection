@@ -7,7 +7,7 @@ from app.schemas.internal_modules import (
     CohortRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
-    OfferingGroup,
+    OfferingGroupLabel,
 )
 
 
@@ -51,7 +51,7 @@ class CohortRegulationsFactory(SQLAlchemyModelFactory):
     ects: int = factory.Faker("pyint", min_value=5, max_value=30)
     exam_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     cw_component: int = factory.Faker("pyint", min_value=1, max_value=10)
-    offering_group: OfferingGroup = factory.Faker("offering_group_label")
+    offering_group: OfferingGroupLabel = factory.Faker("offering_group_label")
 
     @factory.post_generation
     def with_enrollments(
