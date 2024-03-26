@@ -1,9 +1,32 @@
 from datetime import datetime, timezone
+from enum import auto
 
-from sqlalchemy import DateTime, UniqueConstraint, func
+from sqlalchemy import DateTime, Enum, UniqueConstraint, func
 from sqlmodel import ARRAY, Column, Field, Integer, Relationship, SQLModel
 
 from app.schemas.offering_group import OfferingGroupRead
+from app.utils.SQLModelStrEnum import SQLModelStrEnum
+
+
+class TimetableConstraint(SQLModelStrEnum):
+    Tx101 = auto()
+    Tx102 = auto()
+    Tx103 = auto()
+    Tx104 = auto()
+    Tx105 = auto()
+    Tx106 = auto()
+    Tx107 = auto()
+    Tx108 = auto()
+    Tx109 = auto()
+    Tx201 = auto()
+    Tx202 = auto()
+    Tx203 = auto()
+    Tx204 = auto()
+    Tx205 = auto()
+    Tx206 = auto()
+    Tx207 = auto()
+    Tx208 = auto()
+    Tx209 = auto()
 
 
 class InternalModuleOnOffer(SQLModel, table=True):
@@ -14,6 +37,11 @@ class InternalModuleOnOffer(SQLModel, table=True):
     code: str = Field(max_length=30, nullable=False)
     description: str
     terms: list[int] = Field(default=None, sa_column=Column(ARRAY(Integer())))
+    timetable_constraint: TimetableConstraint = Field(
+        sa_column=Column(
+            Enum(TimetableConstraint, name="timetable_constraint"),
+        )
+    )
     regulations: list["CohortRegulations"] = Relationship(
         back_populates="module",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
@@ -34,7 +62,7 @@ class CohortRegulations(SQLModel, table=True):
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
     offering_group_id: int = Field(foreign_key="offering_group.id", nullable=False)
-    offering_group: "OfferingGroup" = Relationship(back_populates="cohort_regulations")
+    offering_group: "OfferingGroup" = Relationship(back_populates="cohort_regulations")  # type: ignore
 
 
 class InternalModuleChoice(SQLModel, table=True):

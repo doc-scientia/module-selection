@@ -23,7 +23,7 @@ class OfferingGroup(SQLModel, table=True):
     )
     min: int = Field(nullable=False)
     max: int = Field(nullable=False)
-    cohort_regulations: list["CohortRegulations"] = Relationship(
+    cohort_regulations: list["CohortRegulations"] = Relationship(  # type: ignore
         back_populates="offering_group"
     )
 

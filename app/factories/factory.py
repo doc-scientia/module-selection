@@ -4,6 +4,7 @@ import factory
 from faker.providers import BaseProvider, internet, job, lorem, person, python
 
 from app.schemas.configurations import ModuleSelectionStatus
+from app.schemas.internal_modules import TimetableConstraint
 from app.schemas.offering_group import OfferingGroupLabel
 
 TERMS = (1, 2, 3)
@@ -30,6 +31,11 @@ class Terms(BaseProvider):
         return random.sample(TERMS, subset_length)  # nosec
 
 
+class TimetableGroup(BaseProvider):
+    def timetable_constraint(self) -> str:
+        return random.choice(TimetableConstraint.members())  # nosec
+
+
 factory.Faker.add_provider(python)
 factory.Faker.add_provider(lorem)
 factory.Faker.add_provider(internet)
@@ -39,3 +45,4 @@ factory.Faker.add_provider(ShortYear)
 factory.Faker.add_provider(SelectionStatus)
 factory.Faker.add_provider(OfferingGroupName)
 factory.Faker.add_provider(Terms)
+factory.Faker.add_provider(TimetableGroup)
