@@ -20,7 +20,7 @@ def is_within_offering_group_bounds(
             OfferingGroup.id == offering_group.id,
             InternalModuleChoice.username == student,
         )
-        .group_by(OfferingGroup.min, OfferingGroup.max)
+        .group_by(OfferingGroup.min, OfferingGroup.max)  # type: ignore
     )
     result = session.exec(query).first()
     return True if result is None else result
