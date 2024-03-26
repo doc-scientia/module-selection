@@ -12,6 +12,7 @@ from app.factories.internal_modules import (
     InternalModuleChoiceFactory,
     InternalModuleOnOfferFactory,
 )
+from app.factories.offering_group import OfferingGroupFactory
 
 all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
     ConfigurationFactory,
@@ -21,4 +22,5 @@ all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
     InternalModuleOnOfferFactory,
     CohortRegulationsFactory,
     InternalModuleChoiceFactory,
+    OfferingGroupFactory,
 ]

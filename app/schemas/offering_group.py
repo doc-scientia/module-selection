@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Enum
-from sqlmodel import Field, SQLModel
+from enum import auto
 
-from app.schemas.internal_modules import OfferingGroupLabel
+from sqlalchemy import Column, Enum
+from sqlmodel import Field, Relationship, SQLModel
+
+from app.utils.SQLModelStrEnum import SQLModelStrEnum
+
+
+class OfferingGroupLabel(SQLModelStrEnum):
+    OPTIONAL = auto()
+    SELECTIVE = auto()
 
 
 class OfferingGroup(SQLModel, table=True):
@@ -16,3 +23,11 @@ class OfferingGroup(SQLModel, table=True):
     )
     min: int = Field(nullable=False)
     max: int = Field(nullable=False)
+    cohort_regulations: list["CohortRegulations"] = Relationship(
+        back_populates="offering_group"
+    )
+
+
+class OfferingGroupRead(SQLModel):
+    id: int
+    label: OfferingGroupLabel

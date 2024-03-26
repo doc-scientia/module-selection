@@ -1,15 +1,9 @@
 from datetime import datetime, timezone
-from enum import auto
 
 from sqlalchemy import DateTime, UniqueConstraint, func
-from sqlmodel import ARRAY, Column, Enum, Field, Integer, Relationship, SQLModel
+from sqlmodel import ARRAY, Column, Field, Integer, Relationship, SQLModel
 
-from app.utils.SQLModelStrEnum import SQLModelStrEnum
-
-
-class OfferingGroupLabel(SQLModelStrEnum):
-    OPTIONAL = auto()
-    SELECTIVE = auto()
+from app.schemas.offering_group import OfferingGroupRead
 
 
 class InternalModuleOnOffer(SQLModel, table=True):
@@ -33,18 +27,14 @@ class CohortRegulations(SQLModel, table=True):
     ects: int = Field(nullable=False)
     exam_component: int = Field(nullable=False)
     cw_component: int = Field(nullable=False)
-    offering_group: OfferingGroupLabel = Field(
-        sa_column=Column(
-            Enum(OfferingGroupLabel, name="offering_group_label"),
-            nullable=False,
-        )
-    )
     module_id: int = Field(index=True, foreign_key="internal_module_on_offer.id")
     module: InternalModuleOnOffer = Relationship(back_populates="regulations")
     enrollments: list["InternalModuleChoice"] = Relationship(
         back_populates="cohort_regulations",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
+    offering_group_id: int = Field(foreign_key="offering_group.id", nullable=False)
+    offering_group: "OfferingGroup" = Relationship(back_populates="cohort_regulations")
 
 
 class InternalModuleChoice(SQLModel, table=True):
@@ -70,7 +60,7 @@ class CohortRegulationsRead(SQLModel):
     ects: int
     exam_component: int
     cw_component: int
-    offering_group: OfferingGroupLabel
+    offering_group: OfferingGroupRead
 
 
 class InternalModuleOnOfferRead(SQLModel):

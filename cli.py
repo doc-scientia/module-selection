@@ -11,10 +11,11 @@ from app.factories import (
     ConfigurationFactory,
     ExternalModuleOnOfferFactory,
     InternalModuleOnOfferFactory,
+    OfferingGroupFactory,
     all_factories,
 )
 from app.schemas.configurations import ModuleSelectionStatus
-from app.schemas.internal_modules import OfferingGroupLabel
+from app.schemas.offering_group import OfferingGroupLabel
 
 cli = typer.Typer()
 
@@ -60,20 +61,26 @@ def populate_db(
             with_periods=[dict(end=datetime.utcnow() + timedelta(weeks=2))],
             status=ModuleSelectionStatus.USE_PERIODS,
         )
+        optional_group = OfferingGroupFactory(
+            year=year, label=OfferingGroupLabel.OPTIONAL
+        )
+        selective_group = OfferingGroupFactory(
+            year=year, label=OfferingGroupLabel.SELECTIVE
+        )
         ExternalModuleOnOfferFactory.create_batch(size=3, year=year)
         InternalModuleOnOfferFactory.create_batch(
             size=5,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=OfferingGroupLabel.OPTIONAL),
-                dict(cohort="v5", offering_group=OfferingGroupLabel.SELECTIVE),
+                dict(cohort="c3", offering_group=optional_group),
+                dict(cohort="v5", offering_group=selective_group),
             ],
         )
         InternalModuleOnOfferFactory.create_batch(
             size=3,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=OfferingGroupLabel.SELECTIVE),
+                dict(cohort="c3", offering_group=selective_group),
             ],
         )
     print("Database populated successfully.")

@@ -4,7 +4,7 @@ import factory
 from faker.providers import BaseProvider, internet, job, lorem, person, python
 
 from app.schemas.configurations import ModuleSelectionStatus
-from app.schemas.internal_modules import OfferingGroupLabel
+from app.schemas.offering_group import OfferingGroupLabel
 
 TERMS = (1, 2, 3)
 
