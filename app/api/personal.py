@@ -16,6 +16,7 @@ from app.schemas.internal_modules import (
     InternalModuleChoiceWrite,
     InternalModuleOnOffer,
 )
+from app.selection_validation import is_within_offering_group_bounds
 
 personal_router = APIRouter(prefix="/me/{year}")
 
@@ -137,6 +138,13 @@ async def apply_for_internal_module(
         )
 
     if next((e for e in regulations.enrollments if e.username == current_user), None):
+        raise HTTPException(
+            status_code=400, detail="You have already applied for this module."
+        )
+
+    if not is_within_offering_group_bounds(
+        session, current_user, regulations.ects, regulations.offering_group
+    ):
         raise HTTPException(
             status_code=400, detail="You have already applied for this module."
         )

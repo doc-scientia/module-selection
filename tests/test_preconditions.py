@@ -39,7 +39,7 @@ def test_verify_selection_period_throws_exception_if_outside_configuration_perio
     )
 
 
-def test_verify_selection_period_throws_exception_if_no_configuration_exsist(session):
+def test_verify_selection_period_throws_exception_if_no_configuration_exist(session):
     with pytest.raises(HTTPException) as exc_info:
         verify_module_selection_is_open("2324", session)
     assert exc_info.value.status_code == 403
