@@ -16,7 +16,7 @@ class ExternalModuleOnOfferFactory(SQLAlchemyModelFactory):
     code: str = factory.Faker(
         "pystr_format", string_format="#####", letters=string.ascii_uppercase
     )
-    terms: list[int] = [1, 2, 3]
+    terms: list[int] = factory.Faker("terms")
     ects: int = factory.Faker("pyint", min_value=5, max_value=30)
 
     @factory.post_generation

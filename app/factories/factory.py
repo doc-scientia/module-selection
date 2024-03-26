@@ -6,6 +6,8 @@ from faker.providers import BaseProvider, internet, job, lorem, person, python
 from app.schemas.configurations import ModuleSelectionStatus
 from app.schemas.internal_modules import OfferingGroup
 
+TERMS = (1, 2, 3)
+
 
 class ShortYear(BaseProvider):
     def short_year(self) -> str:
@@ -22,6 +24,12 @@ class OfferingGroupLabel(BaseProvider):
         return random.choice(OfferingGroup.members())  # nosec
 
 
+class Terms(BaseProvider):
+    def terms(self) -> list[int]:
+        subset_length = random.randint(1, 3)  # nosec
+        return random.sample(TERMS, subset_length)  # nosec
+
+
 factory.Faker.add_provider(python)
 factory.Faker.add_provider(lorem)
 factory.Faker.add_provider(internet)
@@ -30,3 +38,4 @@ factory.Faker.add_provider(job)
 factory.Faker.add_provider(ShortYear)
 factory.Faker.add_provider(SelectionStatus)
 factory.Faker.add_provider(OfferingGroupLabel)
+factory.Faker.add_provider(Terms)

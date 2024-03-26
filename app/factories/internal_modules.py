@@ -22,7 +22,7 @@ class InternalModuleOnOfferFactory(SQLAlchemyModelFactory):
         "pystr_format", string_format="#####", letters=string.ascii_uppercase
     )
     description: str = factory.Faker("text")
-    terms: list[int] = [1, 2, 3]
+    terms: list[int] = factory.Faker("terms")
 
     @factory.post_generation
     def with_regulations(
