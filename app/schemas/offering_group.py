@@ -10,7 +10,7 @@ class OfferingGroupConstraint(SQLModel, table=True):
     year: str = Field(nullable=False)
     offering_group: OfferingGroup = Field(
         sa_column=Column(
-            Enum(OfferingGroup, name="offering_group"),
+            Enum(OfferingGroup, name="offering_group_label"),
             nullable=False,
         )
     )
