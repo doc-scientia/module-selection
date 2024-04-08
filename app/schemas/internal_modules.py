@@ -8,7 +8,7 @@ from app.schemas.offering_group import OfferingGroupRead
 from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
 
-class TimetableConstraint(SQLModelStrEnum):
+class ExamTimetableConstraint(SQLModelStrEnum):
     Tx101 = auto()
     Tx102 = auto()
     Tx103 = auto()
@@ -37,9 +37,9 @@ class InternalModuleOnOffer(SQLModel, table=True):
     code: str = Field(max_length=30, nullable=False)
     description: str
     terms: list[int] = Field(default=None, sa_column=Column(ARRAY(Integer())))
-    timetable_constraint: TimetableConstraint = Field(
+    exam_timetable_constraint: ExamTimetableConstraint = Field(
         sa_column=Column(
-            Enum(TimetableConstraint, name="timetable_constraint"),
+            Enum(ExamTimetableConstraint, name="exam_timetable_constraint"),
         )
     )
     regulations: list["CohortRegulations"] = Relationship(
