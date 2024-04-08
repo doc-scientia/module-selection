@@ -16,7 +16,10 @@ from app.schemas.internal_modules import (
     InternalModuleChoiceWrite,
     InternalModuleOnOffer,
 )
-from app.selection_validation import is_within_offering_group_bounds
+from app.selection_validation import (
+    compute_exam_timetable_clash,
+    is_within_offering_group_bounds,
+)
 
 personal_router = APIRouter(prefix="/me/{year}")
 
@@ -148,6 +151,14 @@ async def apply_for_internal_module(
         raise HTTPException(
             status_code=400,
             detail=f"Your selection violates the maximum number of ects for {regulations.offering_group.label}.",
+        )
+
+    if clash := compute_exam_timetable_clash(
+        session, year, current_user, regulations.module.exam_timetable_constraint
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail=f"The chosen module timetable clashes with the following selected module: {clash}.",
         )
 
     new_enrollment = InternalModuleChoice(

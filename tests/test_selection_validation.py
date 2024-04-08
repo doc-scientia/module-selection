@@ -1,6 +1,10 @@
 import pytest
 
-from app.selection_validation import is_within_offering_group_bounds
+from app.schemas.internal_modules import ExamTimetableConstraint
+from app.selection_validation import (
+    compute_exam_timetable_clash,
+    is_within_offering_group_bounds,
+)
 
 
 @pytest.mark.parametrize(
@@ -36,4 +40,35 @@ def test_validation_of_ects_against_offering_group_constraints(
     assert (
         is_within_offering_group_bounds(session, "hpotter", offering_group, new_ects)
         is expected
+    )
+
+
+def test_clashing_module_code_returned_on_computation_of_exam_timetable_clash(
+    session,
+    internal_module_on_offer_factory,
+):
+    module = internal_module_on_offer_factory(
+        exam_timetable_constraint=ExamTimetableConstraint.Tx101,
+        with_regulations=[
+            dict(
+                with_enrollments=[dict(username="hpotter")],
+            )
+        ],
+    )
+    assert (
+        compute_exam_timetable_clash(
+            session, module.year, "hpotter", module.exam_timetable_constraint
+        )
+        is module.code
+    )
+
+
+def test_none_returned_on_computation_of_exam_timetable_clash_if_no_clashing_module(
+    session,
+):
+    assert (
+        compute_exam_timetable_clash(
+            session, "2324", "hpotter", ExamTimetableConstraint.Tx101
+        )
+        is None
     )
