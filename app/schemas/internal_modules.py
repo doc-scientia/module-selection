@@ -52,7 +52,7 @@ class DegreeRegulations(SQLModel, table=True):
     __tablename__ = "degree_regulations"
     id: int = Field(primary_key=True)
     degree: str = Field(nullable=False)
-    ects: int = Field(nullable=False)
+    ects: float = Field(nullable=False)
     exam_component: int = Field(nullable=False)
     cw_component: int = Field(nullable=False)
     module_id: int = Field(index=True, foreign_key="internal_module_on_offer.id")
@@ -85,7 +85,7 @@ class DegreeRegulationsRead(SQLModel):
     id: int
     module_id: int
     degree: str
-    ects: int
+    ects: float
     exam_component: int
     cw_component: int
     offering_group: OfferingGroupRead

@@ -21,8 +21,8 @@ class OfferingGroup(SQLModel, table=True):
             nullable=False,
         )
     )
-    min: int = Field(nullable=False)
-    max: int = Field(nullable=False)
+    min: float = Field(nullable=False)
+    max: float = Field(nullable=False)
     degree_regulations: list["DegreeRegulations"] = Relationship(  # type: ignore
         back_populates="offering_group"
     )

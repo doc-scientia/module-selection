@@ -46,9 +46,9 @@ class DegreeRegulationsFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "commit"
 
     degree: str = factory.Faker(
-        "pystr_format", string_format="#?", letters=string.ascii_uppercase
+        "pystr_format", string_format="##?", letters=string.ascii_uppercase
     )
-    ects: int = factory.Faker("pyint", min_value=5, max_value=30)
+    ects: float = factory.Faker("pyfloat", min_value=5, max_value=30)
     exam_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     cw_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     offering_group = factory.SubFactory(OfferingGroupFactory)
