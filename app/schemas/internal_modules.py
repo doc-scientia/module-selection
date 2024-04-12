@@ -42,32 +42,32 @@ class InternalModuleOnOffer(SQLModel, table=True):
             Enum(ExamTimetableConstraint, name="exam_timetable_constraint"),
         )
     )
-    regulations: list["CohortRegulations"] = Relationship(
+    regulations: list["DegreeRegulations"] = Relationship(
         back_populates="module",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
 
 
-class CohortRegulations(SQLModel, table=True):
-    __tablename__ = "cohort_regulations"
+class DegreeRegulations(SQLModel, table=True):
+    __tablename__ = "degree_regulations"
     id: int = Field(primary_key=True)
-    cohort: str = Field(nullable=False)
+    degree: str = Field(nullable=False)
     ects: int = Field(nullable=False)
     exam_component: int = Field(nullable=False)
     cw_component: int = Field(nullable=False)
     module_id: int = Field(index=True, foreign_key="internal_module_on_offer.id")
     module: InternalModuleOnOffer = Relationship(back_populates="regulations")
     enrollments: list["InternalModuleChoice"] = Relationship(
-        back_populates="cohort_regulations",
+        back_populates="degree_regulations",
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
     offering_group_id: int = Field(foreign_key="offering_group.id", nullable=False)
-    offering_group: "OfferingGroup" = Relationship(back_populates="cohort_regulations")  # type: ignore
+    offering_group: "OfferingGroup" = Relationship(back_populates="degree_regulations")  # type: ignore
 
 
 class InternalModuleChoice(SQLModel, table=True):
     __tablename__ = "internal_module_choice"
-    __table_args__ = (UniqueConstraint("cohort_regulations_id", "username"),)
+    __table_args__ = (UniqueConstraint("degree_regulations_id", "username"),)
     id: int = Field(primary_key=True)
     timestamp: datetime = Field(
         sa_column=Column(
@@ -77,14 +77,14 @@ class InternalModuleChoice(SQLModel, table=True):
         )
     )
     username: str
-    cohort_regulations_id: int = Field(index=True, foreign_key="cohort_regulations.id")
-    cohort_regulations: CohortRegulations = Relationship(back_populates="enrollments")
+    degree_regulations_id: int = Field(index=True, foreign_key="degree_regulations.id")
+    degree_regulations: DegreeRegulations = Relationship(back_populates="enrollments")
 
 
-class CohortRegulationsRead(SQLModel):
+class DegreeRegulationsRead(SQLModel):
     id: int
     module_id: int
-    cohort: str
+    degree: str
     ects: int
     exam_component: int
     cw_component: int
@@ -98,12 +98,12 @@ class InternalModuleOnOfferRead(SQLModel):
     code: str
     description: str
     terms: list[int]
-    regulations: list[CohortRegulationsRead]
+    regulations: list[DegreeRegulationsRead]
 
 
 class InternalModuleChoiceRead(SQLModel):
     id: int
-    cohort_regulations: CohortRegulationsRead
+    degree_regulations: DegreeRegulationsRead
     timestamp: datetime
     username: str
 
@@ -117,4 +117,4 @@ class InternalModuleChoiceRead(SQLModel):
 
 class InternalModuleChoiceWrite(SQLModel):
     module_code: str
-    cohort: str
+    degree: str

@@ -10,7 +10,7 @@ from app.schemas.external_modules import (
     ExternalModuleOnOffer,
 )
 from app.schemas.internal_modules import (
-    CohortRegulations,
+    DegreeRegulations,
     InternalModuleChoice,
     InternalModuleChoiceRead,
     InternalModuleChoiceWrite,
@@ -99,7 +99,7 @@ async def get_personal_internal_module_choices(
     username = current_user
     query = (
         select(InternalModuleChoice)
-        .join(CohortRegulations)
+        .join(DegreeRegulations)
         .join(InternalModuleOnOffer)
         .where(
             InternalModuleOnOffer.year == year,
@@ -132,12 +132,12 @@ async def apply_for_internal_module(
             detail=f"Module with code '{selection.module_code}' not found.",
         )
     regulations = next(
-        (r for r in module.regulations if r.cohort == selection.cohort), None
+        (r for r in module.regulations if r.degree == selection.degree), None
     )
     if not regulations:
         raise HTTPException(
             status_code=400,
-            detail=f"Module with code '{selection.module_code}' not offered to cohort '{selection.cohort}'.",
+            detail=f"Module with code '{selection.module_code}' not offered to degree '{selection.degree}'.",
         )
 
     if next((e for e in regulations.enrollments if e.username == current_user), None):
@@ -162,7 +162,7 @@ async def apply_for_internal_module(
         )
 
     new_enrollment = InternalModuleChoice(
-        username=current_user, cohort_regulations=regulations
+        username=current_user, degree_regulations=regulations
     )
     session.add(new_enrollment)
     session.commit()

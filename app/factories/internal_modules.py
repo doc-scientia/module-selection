@@ -5,7 +5,7 @@ from factory.alchemy import SQLAlchemyModelFactory
 
 from app.factories.offering_group import OfferingGroupFactory
 from app.schemas.internal_modules import (
-    CohortRegulations,
+    DegreeRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
 )
@@ -34,18 +34,18 @@ class InternalModuleOnOfferFactory(SQLAlchemyModelFactory):
         if create and regulations:
             if isinstance(regulations, int):
                 for n in range(regulations):
-                    CohortRegulationsFactory(module=self)
+                    DegreeRegulationsFactory(module=self)
             if isinstance(regulations, list):
                 for r in regulations:
-                    CohortRegulationsFactory(module=self, **r)
+                    DegreeRegulationsFactory(module=self, **r)
 
 
-class CohortRegulationsFactory(SQLAlchemyModelFactory):
+class DegreeRegulationsFactory(SQLAlchemyModelFactory):
     class Meta:
-        model = CohortRegulations
+        model = DegreeRegulations
         sqlalchemy_session_persistence = "commit"
 
-    cohort: str = factory.Faker(
+    degree: str = factory.Faker(
         "pystr_format", string_format="#?", letters=string.ascii_uppercase
     )
     ects: int = factory.Faker("pyint", min_value=5, max_value=30)
@@ -55,15 +55,15 @@ class CohortRegulationsFactory(SQLAlchemyModelFactory):
 
     @factory.post_generation
     def with_enrollments(
-        self: CohortRegulations, create: bool, enrollments: int | list[dict], **kwargs
+        self: DegreeRegulations, create: bool, enrollments: int | list[dict], **kwargs
     ) -> None:
         if create and enrollments:
             if isinstance(enrollments, int):
                 for n in range(enrollments):
-                    InternalModuleChoiceFactory(cohort_regulations=self)
+                    InternalModuleChoiceFactory(degree_regulations=self)
             if isinstance(enrollments, list):
                 for e in enrollments:
-                    InternalModuleChoiceFactory(cohort_regulations=self, **e)
+                    InternalModuleChoiceFactory(degree_regulations=self, **e)
 
 
 class InternalModuleChoiceFactory(SQLAlchemyModelFactory):

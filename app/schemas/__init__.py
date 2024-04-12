@@ -2,7 +2,7 @@ from .configurations import Configuration, SelectionPeriod
 from .degree_ects_constraints import DegreeECTSConstraints
 from .external_modules import ExternalModuleChoice, ExternalModuleOnOffer
 from .internal_modules import (
-    CohortRegulations,
+    DegreeRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
 )
@@ -16,6 +16,6 @@ models = (
     ExternalModuleChoice,
     InternalModuleOnOffer,
     OfferingGroup,
-    CohortRegulations,
+    DegreeRegulations,
     InternalModuleChoice,
 )

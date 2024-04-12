@@ -8,7 +8,7 @@ from app.factories.external_modules import (
     ExternalModuleOnOfferFactory,
 )
 from app.factories.internal_modules import (
-    CohortRegulationsFactory,
+    DegreeRegulationsFactory,
     InternalModuleChoiceFactory,
     InternalModuleOnOfferFactory,
 )
@@ -20,7 +20,7 @@ all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
     ExternalModuleChoiceFactory,
     ExternalModuleOnOfferFactory,
     InternalModuleOnOfferFactory,
-    CohortRegulationsFactory,
+    DegreeRegulationsFactory,
     InternalModuleChoiceFactory,
     OfferingGroupFactory,
 ]

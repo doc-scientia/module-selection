@@ -2,7 +2,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 
 from app.schemas import (
-    CohortRegulations,
+    DegreeRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
     OfferingGroup,
@@ -16,11 +16,11 @@ def is_within_offering_group_bounds(
     query = (
         select(
             (
-                (func.sum(CohortRegulations.ects) + new_ects >= OfferingGroup.min)
-                & (func.sum(CohortRegulations.ects) + new_ects <= OfferingGroup.max)
+                (func.sum(DegreeRegulations.ects) + new_ects >= OfferingGroup.min)
+                & (func.sum(DegreeRegulations.ects) + new_ects <= OfferingGroup.max)
             ).label("is_within_bounds")
         )
-        .join(CohortRegulations)
+        .join(DegreeRegulations)
         .join(InternalModuleChoice)
         .where(
             OfferingGroup.id == offering_group.id,
@@ -40,7 +40,7 @@ def compute_exam_timetable_clash(
 ):
     query = (
         select(InternalModuleOnOffer)
-        .join(CohortRegulations)
+        .join(DegreeRegulations)
         .join(InternalModuleChoice)
         .where(
             InternalModuleChoice.username == student,

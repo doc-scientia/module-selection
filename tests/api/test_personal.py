@@ -103,24 +103,24 @@ def test_student_can_select_valid_internal_module(
     offering_group_factory,
     open_module_selection,
 ):
-    cohort = "c3"
+    degree = "mc3"
     offering_group = offering_group_factory()
     internal_module = internal_module_on_offer_factory(
         year=offering_group.year,
         with_regulations=[
-            dict(cohort=cohort, offering_group=offering_group, ects=offering_group.min)
+            dict(degree=degree, offering_group=offering_group, ects=offering_group.min)
         ],
     )
 
     with open_module_selection(internal_module.year):
         res = client.post(
             f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "cohort": cohort},
+            json={"module_code": internal_module.code, "degree": degree},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 200
-    assert res.json()["cohort_regulations"]["cohort"] == cohort
-    assert res.json()["cohort_regulations"]["module_id"] == internal_module.id
+    assert res.json()["degree_regulations"]["degree"] == degree
+    assert res.json()["degree_regulations"]["module_id"] == internal_module.id
 
 
 def test_student_cannot_select_module_if_selection_violates_offering_group_constraint(
@@ -129,13 +129,13 @@ def test_student_cannot_select_module_if_selection_violates_offering_group_const
     offering_group_factory,
     open_module_selection,
 ):
-    cohort = "c3"
+    degree = "mc3"
     offering_group = offering_group_factory()
     internal_module_on_offer_factory(
         year=offering_group.year,
         with_regulations=[
             dict(
-                cohort=cohort,
+                degree=degree,
                 offering_group=offering_group,
                 ects=offering_group.max,
                 with_enrollments=[dict(username=HPOTTER_CREDENTIALS.username)],
@@ -144,13 +144,13 @@ def test_student_cannot_select_module_if_selection_violates_offering_group_const
     )
     internal_module = internal_module_on_offer_factory(
         year=offering_group.year,
-        with_regulations=[dict(cohort=cohort, offering_group=offering_group)],
+        with_regulations=[dict(degree=degree, offering_group=offering_group)],
     )
 
     with open_module_selection(internal_module.year):
         res = client.post(
             f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "cohort": cohort},
+            json={"module_code": internal_module.code, "degree": degree},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 400
@@ -166,43 +166,43 @@ def test_student_cannot_select_non_existing_internal_module(
     with open_module_selection("2324"):
         res = client.post(
             "me/2324/internal-modules/choices",
-            json={"module_code": "50002", "cohort": "c3"},
+            json={"module_code": "50002", "degree": "mc3"},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 404
     assert res.json()["detail"] == "Module with code '50002' not found."
 
 
-def test_student_cannot_select_internal_module_if_not_offered_to_requested_cohort(
+def test_student_cannot_select_internal_module_if_not_offered_to_requested_degree(
     client, internal_module_on_offer_factory, open_module_selection
 ):
     internal_module = internal_module_on_offer_factory(with_regulations=1)
     with open_module_selection(internal_module.year):
         res = client.post(
             f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "cohort": "XXX"},
+            json={"module_code": internal_module.code, "degree": "XXX"},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 400
     assert (
         res.json()["detail"]
-        == f"Module with code '{internal_module.code}' not offered to cohort 'XXX'."
+        == f"Module with code '{internal_module.code}' not offered to degree 'XXX'."
     )
 
 
 def test_student_cannot_select_internal_module_if_already_selected(
     client, internal_module_on_offer_factory, open_module_selection
 ):
-    cohort = "c3"
+    degree = "mc3"
     internal_module = internal_module_on_offer_factory(
         with_regulations=[
-            dict(cohort=cohort, with_enrollments=[dict(username="hpotter")])
+            dict(degree=degree, with_enrollments=[dict(username="hpotter")])
         ]
     )
     with open_module_selection(internal_module.year):
         res = client.post(
             f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "cohort": cohort},
+            json={"module_code": internal_module.code, "degree": degree},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 400
@@ -215,7 +215,7 @@ def test_student_cannot_select_internal_module_if_module_selection_not_open(
     with open_module_selection("2324"):
         res = client.post(
             "me/2324/internal-modules/choices",
-            json={"module_code": "50002", "cohort": "c3"},
+            json={"module_code": "50002", "degree": "mc3"},
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 404

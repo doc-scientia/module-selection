@@ -72,15 +72,15 @@ def populate_db(
             size=5,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=optional_group),
-                dict(cohort="v5", offering_group=selective_group),
+                dict(degree="c3", offering_group=optional_group),
+                dict(degree="v5", offering_group=selective_group),
             ],
         )
         InternalModuleOnOfferFactory.create_batch(
             size=3,
             year=year,
             with_regulations=[
-                dict(cohort="c3", offering_group=selective_group),
+                dict(degree="c3", offering_group=selective_group),
             ],
         )
     print("Database populated successfully.")
