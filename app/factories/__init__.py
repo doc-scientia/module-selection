@@ -3,6 +3,7 @@ from typing import Sequence, Type
 from factory.alchemy import SQLAlchemyModelFactory
 
 from app.factories.configuration import ConfigurationFactory, SelectionPeriodFactory
+from app.factories.degree_ects_constraints import DegreeECTSConstraintsFactory
 from app.factories.external_modules import (
     ExternalModuleChoiceFactory,
     ExternalModuleOnOfferFactory,
@@ -23,4 +24,5 @@ all_factories: Sequence[Type[SQLAlchemyModelFactory]] = [
     DegreeRegulationsFactory,
     InternalModuleChoiceFactory,
     OfferingGroupFactory,
+    DegreeECTSConstraintsFactory,
 ]

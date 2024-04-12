@@ -4,7 +4,7 @@ from enum import auto
 from sqlalchemy import DateTime, Enum, UniqueConstraint, func
 from sqlmodel import ARRAY, Column, Field, Integer, Relationship, SQLModel
 
-from app.schemas.offering_group import OfferingGroupRead
+from app.schemas.constraints import OfferingGroupRead
 from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
 
@@ -81,7 +81,7 @@ class InternalModuleChoice(SQLModel, table=True):
     degree_regulations: DegreeRegulations = Relationship(back_populates="enrollments")
 
 
-class DegreeRegulationsRead(SQLModel):
+class DegreeSpecificModuleRegulationsRead(SQLModel):
     id: int
     module_id: int
     degree: str
@@ -98,12 +98,12 @@ class InternalModuleOnOfferRead(SQLModel):
     code: str
     description: str
     terms: list[int]
-    regulations: list[DegreeRegulationsRead]
+    regulations: list[DegreeSpecificModuleRegulationsRead]
 
 
 class InternalModuleChoiceRead(SQLModel):
     id: int
-    degree_regulations: DegreeRegulationsRead
+    degree_regulations: DegreeSpecificModuleRegulationsRead
     timestamp: datetime
     username: str
 

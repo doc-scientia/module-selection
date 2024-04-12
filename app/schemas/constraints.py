@@ -31,3 +31,26 @@ class OfferingGroup(SQLModel, table=True):
 class OfferingGroupRead(SQLModel):
     id: int
     label: OfferingGroupLabel
+    min: float
+    max: float
+
+
+class DegreeECTSConstraints(SQLModel, table=True):
+    __tablename__ = "degree_ects_constraints"
+    id: int = Field(primary_key=True)
+    year: str = Field(nullable=False)
+    degree: str = Field(nullable=False)
+    min: float = Field(nullable=False)
+    max: float = Field(nullable=False)
+
+
+class DegreeECTSConstraintsRead(SQLModel):
+    min: float
+    max: float
+
+
+class ConstraintsRead(SQLModel):
+    degree: str
+    year: str
+    degree_constraints: DegreeECTSConstraintsRead
+    offering_group_constraints: list[OfferingGroupRead]

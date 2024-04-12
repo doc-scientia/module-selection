@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.configuration import module_selection_configuration
+from app.api.constraints import constraints_router
 from app.api.exernal_module_choices_review import external_module_choices_review_router
 from app.api.modules_on_offer import modules_on_offer_router
 from app.api.personal import personal_router
@@ -25,6 +26,10 @@ tags_metadata = [
         "description": "Summary and update of personal module choices",
     },
     {"name": "on offer", "description": "List of modules on offer"},
+    {
+        "name": "constraints",
+        "description": "Comprehensive overview of degree constraints (globally and by offering group)",
+    },
 ]
 
 
@@ -49,5 +54,6 @@ def create_application() -> FastAPI:
     rest_api.include_router(external_module_choices_review_router)
     rest_api.include_router(personal_router)
     rest_api.include_router(modules_on_offer_router)
+    rest_api.include_router(constraints_router)
 
     return rest_api

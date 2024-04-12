@@ -51,7 +51,9 @@ class DegreeRegulationsFactory(SQLAlchemyModelFactory):
     ects: float = factory.Faker("pyfloat", min_value=5, max_value=30)
     exam_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     cw_component: int = factory.Faker("pyint", min_value=1, max_value=10)
-    offering_group = factory.SubFactory(OfferingGroupFactory)
+    offering_group = factory.LazyAttribute(
+        lambda o: OfferingGroupFactory(year=o.module.year)
+    )
 
     @factory.post_generation
     def with_enrollments(

@@ -1,7 +1,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.schemas.offering_group import OfferingGroup, OfferingGroupLabel
+from app.schemas.constraints import OfferingGroup, OfferingGroupLabel
 
 
 class OfferingGroupFactory(SQLAlchemyModelFactory):

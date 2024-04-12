@@ -1,12 +1,11 @@
 from .configurations import Configuration, SelectionPeriod
-from .degree_ects_constraints import DegreeECTSConstraints
+from .constraints import DegreeECTSConstraints, OfferingGroup
 from .external_modules import ExternalModuleChoice, ExternalModuleOnOffer
 from .internal_modules import (
     DegreeRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
 )
-from .offering_group import OfferingGroup
 
 models = (
     DegreeECTSConstraints,

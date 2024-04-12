@@ -11,7 +11,7 @@ from app.schemas.internal_modules import ExamTimetableConstraint
 
 
 def is_within_offering_group_bounds(
-    session: Session, student: str, offering_group: OfferingGroup, new_ects: int
+    session: Session, student: str, offering_group: OfferingGroup, new_ects: float
 ) -> bool:
     query = (
         select(
