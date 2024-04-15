@@ -103,3 +103,22 @@ def test_validation_of_ects_against_total_allowed_for_degree(
         is_within_max_ects_for_degree(session, d.year, d.degree, "hpotter", new_ects)
         is expected
     )
+
+
+def test_validation_of_ects_against_total_allowed_for_degree_passes_if_no_selection_made(
+    session,
+    internal_module_on_offer_factory,
+    degree_ects_constraints_factory,
+):
+    d = degree_ects_constraints_factory()
+    internal_module_on_offer_factory(
+        year=d.year,
+        with_regulations=[
+            dict(
+                degree=d.degree,
+            )
+        ],
+    )
+    assert (
+        is_within_max_ects_for_degree(session, d.year, d.degree, "hpotter", 5) is True
+    )

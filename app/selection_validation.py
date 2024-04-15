@@ -61,6 +61,7 @@ def is_within_max_ects_for_degree(
     student: str,
     new_ects: float,
 ):
+    # PRE: new_ects value will never alone be more than the maximum ects allowed by the degree
     max_ects_subquery = (
         select(DegreeECTSConstraints.max)
         .where(
@@ -82,4 +83,4 @@ def is_within_max_ects_for_degree(
     )
     result = session.exec(query).first()
 
-    return result if result is not None else False
+    return result if result is not None else True
