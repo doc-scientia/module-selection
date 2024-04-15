@@ -2,6 +2,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 
 from app.schemas import (
+    DegreeECTSConstraints,
     DegreeRegulations,
     InternalModuleChoice,
     InternalModuleOnOffer,
@@ -51,3 +52,34 @@ def compute_exam_timetable_clash(
     )
     result = session.exec(query).first()
     return result.code if result else None
+
+
+def is_within_max_ects_for_degree(
+    session: Session,
+    year: str,
+    degree: str,
+    student: str,
+    new_ects: float,
+):
+    max_ects_subquery = (
+        select(DegreeECTSConstraints.max)
+        .where(
+            DegreeECTSConstraints.degree == degree,
+            DegreeECTSConstraints.year == year,
+        )
+        .scalar_subquery()
+    )
+
+    query = (
+        select(func.sum(DegreeRegulations.ects) + new_ects <= max_ects_subquery)
+        .select_from(InternalModuleOnOffer)
+        .join(DegreeRegulations)
+        .join(InternalModuleChoice)
+        .where(
+            InternalModuleChoice.username == student,
+            InternalModuleOnOffer.year == year,
+        )
+    )
+    result = session.exec(query).first()
+
+    return result if result is not None else False

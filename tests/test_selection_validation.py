@@ -3,6 +3,7 @@ import pytest
 from app.schemas.internal_modules import ExamTimetableConstraint
 from app.selection_validation import (
     compute_exam_timetable_clash,
+    is_within_max_ects_for_degree,
     is_within_offering_group_bounds,
 )
 
@@ -71,4 +72,34 @@ def test_none_returned_on_computation_of_exam_timetable_clash_if_no_clashing_mod
             session, "2324", "hpotter", ExamTimetableConstraint.Tx101
         )
         is None
+    )
+
+
+@pytest.mark.parametrize(
+    "current_ects_sum, new_ects, max_ects_allowed, expected",
+    [(50, 5, 60, True), (50, 5, 55.5, True), (50, 7.5, 52, False), (50, 5, 52, False)],
+)
+def test_validation_of_ects_against_total_allowed_for_degree(
+    session,
+    internal_module_on_offer_factory,
+    degree_ects_constraints_factory,
+    current_ects_sum,
+    new_ects,
+    max_ects_allowed,
+    expected,
+):
+    d = degree_ects_constraints_factory(max=max_ects_allowed)
+    internal_module_on_offer_factory(
+        year=d.year,
+        with_regulations=[
+            dict(
+                degree=d.degree,
+                ects=current_ects_sum,
+                with_enrollments=[dict(username="hpotter")],
+            )
+        ],
+    )
+    assert (
+        is_within_max_ects_for_degree(session, d.year, d.degree, "hpotter", new_ects)
+        is expected
     )
