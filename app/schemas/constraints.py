@@ -8,7 +8,25 @@ from app.utils.SQLModelStrEnum import SQLModelStrEnum
 
 class OfferingGroupLabel(SQLModelStrEnum):
     OPTIONAL = auto()
+    OPTIONAL1 = auto()
+    OPTIONAL2 = auto()
+    OPTIONAL3 = auto()
+    REQUIRED = auto()
+    REQUIRED1 = auto()
+    REQUIRED2 = auto()
+    REQUIRED3 = auto()
     SELECTIVE = auto()
+    SELECTIVE1 = auto()
+    SELECTIVE2 = auto()
+    SELECTIVE3 = auto()
+    SELECTIVE4 = auto()
+    SUBTOTAL = auto()
+    SUBTOTAL1 = auto()
+    SUBTOTAL2 = auto()
+    SUBTOTAL3 = auto()
+    EXTRACURRICULAR = auto()
+    XOR = auto()
+    XOR1 = auto()
 
 
 class OfferingGroup(SQLModel, table=True):
