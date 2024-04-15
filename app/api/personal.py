@@ -18,6 +18,7 @@ from app.schemas.internal_modules import (
 )
 from app.selection_validation import (
     compute_exam_timetable_clash,
+    is_within_max_ects_for_degree,
     is_within_offering_group_bounds,
 )
 
@@ -145,11 +146,13 @@ async def apply_for_internal_module(
             status_code=400, detail="You have already applied for this module."
         )
 
-    # if not is_within_max_ects_for_degree(session, regulations.degree, regulations.ects):
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="You can't select this module as doing so would violate the total ECTS allowance for the degree.",
-    #     )
+    if not is_within_max_ects_for_degree(
+        session, year, regulations.degree, current_user, regulations.ects
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="You can't select this module as doing so would violate the total ECTS allowance for the degree.",
+        )
 
     if not is_within_offering_group_bounds(
         session, current_user, regulations.offering_group, regulations.ects

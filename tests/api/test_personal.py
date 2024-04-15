@@ -99,27 +99,35 @@ def test_student_can_get_own_internal_module_choices(
 
 def test_student_can_select_valid_internal_module(
     client,
+    degree_ects_constraints_factory,
     internal_module_on_offer_factory,
     offering_group_factory,
     open_module_selection,
 ):
-    degree = "mc3"
-    offering_group = offering_group_factory()
+    degree_constraints = degree_ects_constraints_factory()
+    offering_group = offering_group_factory(degree=degree_constraints.degree)
     internal_module = internal_module_on_offer_factory(
-        year=offering_group.year,
+        year=degree_constraints.degree,
         with_regulations=[
-            dict(degree=degree, offering_group=offering_group, ects=offering_group.min)
+            dict(
+                degree=degree_constraints.degree,
+                offering_group=offering_group,
+                ects=offering_group.min,
+            )
         ],
     )
 
     with open_module_selection(internal_module.year):
         res = client.post(
             f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "degree": degree},
+            json={
+                "module_code": internal_module.code,
+                "degree": degree_constraints.degree,
+            },
             auth=HPOTTER_CREDENTIALS,
         )
     assert res.status_code == 200
-    assert res.json()["degree_regulations"]["degree"] == degree
+    assert res.json()["degree_regulations"]["degree"] == degree_constraints.degree
     assert res.json()["degree_regulations"]["module_id"] == internal_module.id
 
 
