@@ -1,3 +1,4 @@
+from .admin import Admin
 from .configurations import Configuration, SelectionPeriod
 from .constraints import DegreeECTSConstraints, OfferingGroup
 from .external_modules import ExternalModuleChoice, ExternalModuleOnOffer
@@ -17,4 +18,5 @@ models = (
     OfferingGroup,
     DegreeRegulations,
     InternalModuleChoice,
+    Admin
 )
