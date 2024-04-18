@@ -1,8 +1,8 @@
 import json
 from dataclasses import dataclass
 
-from starlette import status
-
+from app.doc_upstream_services.abc.api_service import deserialize_or_502
+from app.doc_upstream_services.abc.schemas import Student
 from app.doc_upstream_services.response_wrappers import UpstreamResponse
 from app.protocols import AbcUpstreamService
 
@@ -18,7 +18,7 @@ class DummyResponse:
 
 
 class DummyAbcAPIService(AbcUpstreamService):
-    def get_staff_info(
+    def get_staff(
         self,
         year: str,
         login: str,
@@ -40,91 +40,37 @@ class DummyAbcAPIService(AbcUpstreamService):
             )
         )
 
-    def get_student_info(
-        self,
-        year: str,
-        login: str,
-        proxied_user: str | None = None,
-    ) -> UpstreamResponse:
-        FAKE_PHD_STUDENT = {
-            "br99": [
-                {
-                    "login": "br99",
-                    "email": "br99@imperial.ac.uk",
-                    "lastname": "Rostenkowski",
-                    "firstname": "Bernadette",
-                    "salutation": "Dr",
-                    "year": "2223",
-                    "role_in_department": "phd",
-                    "cohort": "r6",
-                },
-            ],
-            "rgeller ": [
-                {
-                    "login": "rgeller",
-                    "firstname": "Ross",
-                    "lastname": "Geller",
-                    "email_address": "rg123@imperial.ac.uk",
-                    "salutation": "Dr",
-                    "year": "2223",
-                    "role_in_department": "phd",
-                    "cohort": "r6",
-                }
-            ],
-            "hpotter": [
-                {
-                    "login": "hpotter",
-                    "firstname": "Harry",
-                    "lastname": "Potter",
-                    "email_address": "hpotter@imperial.ac.uk",
-                    "salutation": "Dr",
-                    "year": "2223",
-                    "role_in_department": "phd",
-                    "cohort": "r6",
-                }
-            ],
+    def get_student(
+        self, year: str, login: str, proxied_user: str | None = None
+    ) -> Student:
+        details_404 = {"detail": "Student not found"}
+
+        fake_students = {
+            "hpotter": {
+                "login": "hpotter",
+                "year": "2223",
+                "email": "harry.potter@ic.ac.uk",
+                "firstname": "Harry",
+                "lastname": "Potter",
+                "salutation": "Mr",
+                "role_in_department": "student",
+                "cohort": "c2",
+                "cid": "0999999",
+                "exam_class": "bm2",
+                "degree_code": "mcai",
+                "degree_year": "mcai2",
+                "student_status": "Normal",
+                "entry_year": 2023,
+                "fee_status": "Home",
+            }
         }
 
-        return UpstreamResponse(
+        res = UpstreamResponse(
             response=DummyResponse(
-                content=json.dumps(FAKE_PHD_STUDENT[login] if not proxied_user else [])
-            )
-        )
-
-    def get_tutorial_groups(
-        self,
-        year: str,
-        module_codes: list[str] | None = None,
-        numbers: list[int] | None = None,
-        types: list[str] | None = None,
-        proxied_user: str | None = None,
-    ) -> UpstreamResponse:
-        return UpstreamResponse(
-            response=DummyResponse(
-                status_code=status.HTTP_200_OK,
+                status_code=200 if login in fake_students else 404,
                 content=json.dumps(
-                    [
-                        {
-                            "number": 1,
-                            "type": "PMT",
-                            "tutor": {"login": "adumble"},
-                            "uta": {"login": "cdiggory"},
-                            "members": [
-                                {"login": "hpotter"},
-                                {"login": "rweasley"},
-                            ],
-                        },
-                        {
-                            "number": 2,
-                            "type": "PMT",
-                            "tutor": {"login": "rhagrid"},
-                            "uta": {"login": "pweasley"},
-                            "members": [
-                                {"login": "hgranger"},
-                                {"login": "dmalfoy"},
-                            ],
-                        },
-                    ]
+                    fake_students[login] if login in fake_students else details_404
                 ),
             )
         )
+        return deserialize_or_502(res, Student)

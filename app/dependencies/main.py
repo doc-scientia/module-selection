@@ -10,7 +10,7 @@ from starlette import status
 from app.database.connection import engine
 from app.dev_service_providers.ldap_authentication import DummyLdapAuthenticator
 from app.dev_upstream_services.abc_api_service import DummyAbcAPIService
-from app.doc_upstream_services.abc_api_service import AbcAPIService
+from app.doc_upstream_services.abc.api_service import AbcAPIService
 from app.ldap_authentication.authenticator import DocLdapAuthenticator
 from app.protocols import AbcUpstreamService, Authenticator
 from app.settings import Settings

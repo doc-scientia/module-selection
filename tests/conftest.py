@@ -14,7 +14,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.dev_upstream_services.abc_api_service import DummyResponse
-from app.doc_upstream_services.abc_api_service import AbcAPIService
+from app.doc_upstream_services.abc.api_service import AbcAPIService
 from app.doc_upstream_services.response_wrappers import UpstreamResponse
 
 TEST_DB_SERVER_URL: str = os.environ.get("TEST_DB_SERVER_URL", "postgresql://")

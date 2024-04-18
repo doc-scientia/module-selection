@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.dependencies.main import get_current_user, get_session
+from app.dependencies.main import get_abc_service_handler, get_current_user, get_session
 from app.dependencies.preconditions import verify_module_selection_is_open
+from app.protocols import AbcUpstreamService
 from app.schemas.external_modules import (
     ExternalModuleChoice,
     ExternalModuleChoiceRead,
@@ -120,8 +121,10 @@ async def apply_for_internal_module(
     selection: InternalModuleChoiceWrite,
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
+    abc_api: AbcUpstreamService = Depends(get_abc_service_handler),
     _: str = Depends(verify_module_selection_is_open),
 ):
+    student = abc_api.get_student(year, current_user)
     query = select(InternalModuleOnOffer).where(
         InternalModuleOnOffer.year == year,
         InternalModuleOnOffer.code == selection.module_code,
@@ -133,12 +136,12 @@ async def apply_for_internal_module(
             detail=f"Module with code '{selection.module_code}' not found.",
         )
     regulations = next(
-        (r for r in module.regulations if r.degree == selection.degree), None
+        (r for r in module.regulations if r.degree == student.degree_year), None
     )
     if not regulations:
         raise HTTPException(
             status_code=400,
-            detail=f"Module with code '{selection.module_code}' not offered to degree '{selection.degree}'.",
+            detail=f"Module with code '{selection.module_code}' not offered to degree '{student.degree_year}'.",
         )
 
     if next((e for e in regulations.enrollments if e.username == current_user), None):

@@ -1,10 +1,37 @@
 import contextlib
 from datetime import datetime, timedelta
+from unittest.mock import Mock
 
 import pytest
+from pydantic import BaseModel
+from starlette.testclient import TestClient
 
+from app.dependencies.main import get_abc_service_handler
+from app.doc_upstream_services.abc.api_service import AbcAPIService
+from app.doc_upstream_services.abc.deserialisation import S
 from app.schemas.configurations import ModuleSelectionStatus
 from tests.conftest import HPOTTER_CREDENTIALS
+
+
+class TestStudent(BaseModel):
+    degree_year: str
+
+
+@pytest.fixture(name="abc_patched_client")
+def abc_patched_client_fixture(app):
+    @contextlib.contextmanager
+    def _abc_patched_client_fixture(method: str, content: type[S]):
+        def get_abc_service_handler_override():
+            mock_abc = Mock(AbcAPIService)
+            setattr(mock_abc, method, Mock(return_value=content))
+            return mock_abc
+
+        app.dependency_overrides[
+            get_abc_service_handler
+        ] = get_abc_service_handler_override
+        yield TestClient(app)
+
+    return _abc_patched_client_fixture
 
 
 @pytest.fixture(name="open_module_selection")
@@ -98,7 +125,7 @@ def test_student_can_get_own_internal_module_choices(
 
 
 def test_student_can_select_valid_internal_module(
-    client,
+    abc_patched_client,
     degree_ects_constraints_factory,
     internal_module_on_offer_factory,
     offering_group_factory,
@@ -118,21 +145,25 @@ def test_student_can_select_valid_internal_module(
     )
 
     with open_module_selection(internal_module.year):
-        res = client.post(
-            f"me/{internal_module.year}/internal-modules/choices",
-            json={
-                "module_code": internal_module.code,
-                "degree": degree_constraints.degree,
-            },
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year=degree_constraints.degree),
+            method="get_student",
+        ) as client:
+            res = client.post(
+                f"me/{internal_module.year}/internal-modules/choices",
+                json={
+                    "module_code": internal_module.code,
+                    "degree": degree_constraints.degree,
+                },
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 200
     assert res.json()["degree_regulations"]["degree"] == degree_constraints.degree
     assert res.json()["degree_regulations"]["module_id"] == internal_module.id
 
 
 def test_student_cannot_select_module_if_selection_violates_offering_group_constraint(
-    client,
+    abc_patched_client,
     internal_module_on_offer_factory,
     offering_group_factory,
     open_module_selection,
@@ -156,11 +187,14 @@ def test_student_cannot_select_module_if_selection_violates_offering_group_const
     )
 
     with open_module_selection(internal_module.year):
-        res = client.post(
-            f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "degree": degree},
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year=degree), method="get_student"
+        ) as client:
+            res = client.post(
+                f"me/{internal_module.year}/internal-modules/choices",
+                json={"module_code": internal_module.code, "degree": degree},
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 400
     assert (
         res.json()["detail"]
@@ -169,28 +203,39 @@ def test_student_cannot_select_module_if_selection_violates_offering_group_const
 
 
 def test_student_cannot_select_non_existing_internal_module(
-    client, open_module_selection
+    abc_patched_client, open_module_selection
 ):
     with open_module_selection("2324"):
-        res = client.post(
-            "me/2324/internal-modules/choices",
-            json={"module_code": "50002", "degree": "mc3"},
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year="mc3"), method="get_student"
+        ) as client:
+            res = client.post(
+                "me/2324/internal-modules/choices",
+                json={
+                    "module_code": "50002",
+                },
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 404
     assert res.json()["detail"] == "Module with code '50002' not found."
 
 
 def test_student_cannot_select_internal_module_if_not_offered_to_requested_degree(
-    client, internal_module_on_offer_factory, open_module_selection
+    abc_patched_client, internal_module_on_offer_factory, open_module_selection
 ):
     internal_module = internal_module_on_offer_factory(with_regulations=1)
+
     with open_module_selection(internal_module.year):
-        res = client.post(
-            f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "degree": "XXX"},
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year="XXX"), method="get_student"
+        ) as client:
+            res = client.post(
+                f"me/{internal_module.year}/internal-modules/choices",
+                json={
+                    "module_code": internal_module.code,
+                },
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 400
     assert (
         res.json()["detail"]
@@ -199,7 +244,7 @@ def test_student_cannot_select_internal_module_if_not_offered_to_requested_degre
 
 
 def test_student_cannot_select_internal_module_if_already_selected(
-    client, internal_module_on_offer_factory, open_module_selection
+    abc_patched_client, internal_module_on_offer_factory, open_module_selection
 ):
     degree = "mc3"
     internal_module = internal_module_on_offer_factory(
@@ -207,24 +252,31 @@ def test_student_cannot_select_internal_module_if_already_selected(
             dict(degree=degree, with_enrollments=[dict(username="hpotter")])
         ]
     )
+
     with open_module_selection(internal_module.year):
-        res = client.post(
-            f"me/{internal_module.year}/internal-modules/choices",
-            json={"module_code": internal_module.code, "degree": degree},
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year=degree), method="get_student"
+        ) as client:
+            res = client.post(
+                f"me/{internal_module.year}/internal-modules/choices",
+                json={"module_code": internal_module.code, "degree": degree},
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 400
     assert res.json()["detail"] == "You have already applied for this module."
 
 
 def test_student_cannot_select_internal_module_if_module_selection_not_open(
-    client, open_module_selection
+    abc_patched_client, open_module_selection
 ):
     with open_module_selection("2324"):
-        res = client.post(
-            "me/2324/internal-modules/choices",
-            json={"module_code": "50002", "degree": "mc3"},
-            auth=HPOTTER_CREDENTIALS,
-        )
+        with abc_patched_client(
+            content=TestStudent(degree_year="mc3"), method="get_student"
+        ) as client:
+            res = client.post(
+                "me/2324/internal-modules/choices",
+                json={"module_code": "50002"},
+                auth=HPOTTER_CREDENTIALS,
+            )
     assert res.status_code == 404
     assert res.json()["detail"] == "Module with code '50002' not found."

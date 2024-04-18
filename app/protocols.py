@@ -1,5 +1,6 @@
 from typing import Protocol
 
+from app.doc_upstream_services.abc.schemas import Student
 from app.doc_upstream_services.response_wrappers import UpstreamResponse
 
 
@@ -14,7 +15,7 @@ class AbcUpstreamService(Protocol):
     This interface ensures type compatibility between the real and the mock connectors.
     """
 
-    def get_staff_info(
+    def get_staff(
         self,
         year: str,
         login: str,
@@ -22,20 +23,10 @@ class AbcUpstreamService(Protocol):
     ) -> UpstreamResponse:
         """ABC API returns current staff record"""
 
-    def get_student_info(
+    def get_student(
         self,
         year: str,
         login: str,
         proxied_user: str | None = None,
-    ) -> UpstreamResponse:
+    ) -> Student:
         """ABC API returns current student record"""
-
-    def get_tutorial_groups(
-        self,
-        year: str,
-        module_codes: list[str] | None = None,
-        numbers: list[int] | None = None,
-        types: list[str] | None = None,
-        proxied_user: str | None = None,
-    ) -> UpstreamResponse:
-        """ABC API can get tutorial groups"""

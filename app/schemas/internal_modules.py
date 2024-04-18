@@ -117,4 +117,3 @@ class InternalModuleChoiceRead(SQLModel):
 
 class InternalModuleChoiceWrite(SQLModel):
     module_code: str
-    degree: str
