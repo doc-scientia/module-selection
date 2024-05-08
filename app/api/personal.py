@@ -88,6 +88,45 @@ async def apply_for_external_module(
     return new_subscription
 
 
+@personal_router.delete(
+    "/internal-modules/choices/{choice_id}",
+    status_code=204,
+    tags=["personal module choices"],
+)
+async def delete_personal_internal_module_choice(
+    year: str,
+    choice_id: int,
+    session: Session = Depends(get_session),
+    current_user: str = Depends(get_current_user),
+    _: str = Depends(verify_module_selection_is_open),
+):
+    query = (
+        select(InternalModuleChoice)
+        .join(DegreeRegulations)
+        .join(InternalModuleOnOffer)
+        .where(
+            InternalModuleOnOffer.year == year,
+            InternalModuleChoice.id == choice_id,
+        )
+    )
+
+    enrolment = session.exec(query).first()
+    if not enrolment:
+        raise HTTPException(
+            status_code=404,
+            detail="No internal module choice exists for this module id",
+        )
+
+    if enrolment.username != current_user:
+        raise HTTPException(
+            status_code=403,
+            detail="You cannot delete this module choice as it belongs to another user.",
+        )
+
+    session.delete(enrolment)
+    session.commit()
+
+
 @personal_router.get(
     "/internal-modules/choices",
     response_model=list[InternalModuleChoiceRead],

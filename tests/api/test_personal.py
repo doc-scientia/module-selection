@@ -243,6 +243,81 @@ def test_student_cannot_select_internal_module_if_not_offered_to_requested_degre
     )
 
 
+def test_personal_module_choice_can_be_deleted_if_exists(
+    internal_module_on_offer_factory,
+    internal_module_choice_factory,
+    open_module_selection,
+    client,
+):
+    internal_module = internal_module_on_offer_factory(with_regulations=1)
+    [degree_regs] = internal_module.regulations
+    module_choice = internal_module_choice_factory(
+        username="hpotter", degree_regulations=degree_regs
+    )
+
+    with open_module_selection(internal_module.year):
+        res = client.delete(
+            f"me/{internal_module.year}/internal-modules/choices/{module_choice.id}",
+            auth=HPOTTER_CREDENTIALS,
+        )
+    assert res.status_code == 204
+
+
+def test_user_cannot_delete_another_users_module_choice(
+    internal_module_on_offer_factory,
+    internal_module_choice_factory,
+    open_module_selection,
+    client,
+):
+    internal_module = internal_module_on_offer_factory(with_regulations=1)
+    [degree_regs] = internal_module.regulations
+    module_choice = internal_module_choice_factory(degree_regulations=degree_regs)
+
+    with open_module_selection(internal_module.year):
+        res = client.delete(
+            f"me/{internal_module.year}/internal-modules/choices/{module_choice.id}",
+            auth=HPOTTER_CREDENTIALS,
+        )
+    assert res.status_code == 403
+    assert (
+        res.json()["detail"]
+        == "You cannot delete this module choice as it belongs to another user."
+    )
+
+
+def test_non_existent_module_choice_deletion_fails_with_error(
+    abc_patched_client, open_module_selection, client
+):
+    with open_module_selection("2324"):
+        res = client.delete(
+            "me/2324/internal-modules/choices/40718",
+            auth=HPOTTER_CREDENTIALS,
+        )
+    assert res.status_code == 404
+    assert res.json()["detail"] == "No internal module choice exists for this module id"
+
+
+def test_user_cannot_delete_module_choice_if_module_selection_not_open(
+    internal_module_on_offer_factory,
+    internal_module_choice_factory,
+    open_module_selection,
+    client,
+):
+    internal_module = internal_module_on_offer_factory(with_regulations=1)
+    [degree_regs] = internal_module.regulations
+    module_choice = internal_module_choice_factory(degree_regulations=degree_regs)
+
+    res = client.delete(
+        f"me/{internal_module.year}/internal-modules/choices/{module_choice.id}",
+        auth=HPOTTER_CREDENTIALS,
+    )
+    assert res.status_code == 403
+    assert (
+        res.json()["detail"]
+        == f"Module selection for year {internal_module.year} is not currently open."
+    )
+
+
 def test_student_cannot_select_internal_module_if_already_selected(
     abc_patched_client, internal_module_on_offer_factory, open_module_selection
 ):
