@@ -18,5 +18,5 @@ models = (
     OfferingGroup,
     DegreeRegulations,
     InternalModuleChoice,
-    Admin
+    Admin,
 )
