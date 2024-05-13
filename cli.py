@@ -15,7 +15,7 @@ from app.factories import (
     all_factories,
 )
 from app.schemas.configurations import ModuleSelectionStatus
-from app.schemas.offering_group import OfferingGroupLabel
+from app.schemas.constraints import OfferingGroupLabel
 
 cli = typer.Typer()
 
@@ -81,6 +81,20 @@ def populate_db(
             year=year,
             with_regulations=[
                 dict(degree="c3", offering_group=selective_group),
+            ],
+        )
+
+        # Add choices for Happy Potter
+
+        ExternalModuleOnOfferFactory.create_batch(
+            size=3, year=year, with_applications=[dict(username="hpotter")]
+        )
+
+        InternalModuleOnOfferFactory.create_batch(
+            size=3,
+            year=year,
+            with_regulations=[
+                dict(degree="bc1", with_enrollments=[dict(username="hpotter")])
             ],
         )
     print("Database populated successfully.")
