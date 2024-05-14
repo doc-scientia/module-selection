@@ -16,6 +16,12 @@ def test_user_can_get_internal_modules_on_offer(
 def test_user_can_get_internal_modules_on_offer_by_cohort(
     client, internal_module_on_offer_factory
 ):
+    internal_module_on_offer_factory(
+        year="2324",
+        with_regulations=[
+            {"degree": "bc", "degree_year": 3},
+        ],
+    )
     internal_module_on_offer_factory.create_batch(
         size=3,
         year="2324",

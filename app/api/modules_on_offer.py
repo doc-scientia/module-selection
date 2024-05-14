@@ -41,6 +41,10 @@ def get_internal_modules_on_offer(
     query = select(InternalModuleOnOffer).where(InternalModuleOnOffer.year == year)
     all_internal_modules_on_offer = session.exec(query).all()
     if degrees:
+        relevant_modules = []
         for m in all_internal_modules_on_offer:
-            m.regulations = [r for r in m.regulations if r.degree in degrees]
+            if updated_regs := [r for r in m.regulations if r.degree in degrees]:
+                m.regulations = updated_regs
+                relevant_modules.append(m)
+        return relevant_modules
     return all_internal_modules_on_offer
