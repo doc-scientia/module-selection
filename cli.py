@@ -89,12 +89,16 @@ def populate_db(
         ExternalModuleOnOfferFactory.create_batch(
             size=3, year=year, with_applications=[dict(username="hpotter")]
         )
-
+        InternalModuleOnOfferFactory.create_batch(
+            size=2,
+            year=year,
+            with_regulations=[dict(degree="mcai1")],
+        )
         InternalModuleOnOfferFactory.create_batch(
             size=3,
             year=year,
             with_regulations=[
-                dict(degree="bc1", with_enrollments=[dict(username="hpotter")])
+                dict(degree="mcai1", with_enrollments=[dict(username="hpotter")])
             ],
         )
     print("Database populated successfully.")
