@@ -9,7 +9,8 @@ def test_user_can_get_internal_modules_on_offer(
     )
     res = client.get("/2324/on-offer/internal-modules", auth=HPOTTER_CREDENTIALS)
     assert res.status_code == 200
-    assert len(res.json()) == 6
+    assert len(res.json()) == 3
+    assert all(len(module["regulations"]) == 2 for module in res.json())
 
 
 def test_user_can_get_internal_modules_on_offer_by_cohort(
@@ -28,3 +29,4 @@ def test_user_can_get_internal_modules_on_offer_by_cohort(
     )
     assert res.status_code == 200
     assert len(res.json()) == 3
+    assert all(len(module["regulations"]) == 1 for module in res.json())

@@ -4,7 +4,6 @@ from sqlmodel import Session, select
 from app.dependencies.main import get_current_user, get_session
 from app.schemas.external_modules import ExternalModuleOnOffer
 from app.schemas.internal_modules import (
-    DegreeRegulations,
     InternalModuleOnOffer,
     InternalModuleOnOfferRead,
 )
@@ -39,11 +38,9 @@ def get_internal_modules_on_offer(
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
-    query = (
-        select(InternalModuleOnOffer)
-        .join(DegreeRegulations)
-        .where(InternalModuleOnOffer.year == year)
-    )
-    query = query.where(DegreeRegulations.degree.in_(degrees)) if degrees else query  # type: ignore
+    query = select(InternalModuleOnOffer).where(InternalModuleOnOffer.year == year)
     all_internal_modules_on_offer = session.exec(query).all()
+    if degrees:
+        for m in all_internal_modules_on_offer:
+            m.regulations = [r for r in m.regulations if r.degree in degrees]
     return all_internal_modules_on_offer
