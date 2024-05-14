@@ -52,7 +52,7 @@ class DegreeRegulationsFactory(SQLAlchemyModelFactory):
     degree: str = factory.Faker(
         "pystr_format", string_format="##?", letters=string.ascii_uppercase
     )
-    ects: float = factory.Faker("pyfloat", min_value=5, max_value=30, right_digits=2)
+    ects: float = factory.Faker("pyfloat", min_value=2, max_value=5, right_digits=2)
     exam_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     cw_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     offering_group = factory.LazyAttribute(
