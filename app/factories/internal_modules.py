@@ -6,6 +6,7 @@ from factory.alchemy import SQLAlchemyModelFactory
 from app.factories.offering_group import OfferingGroupFactory
 from app.schemas.internal_modules import (
     DegreeRegulations,
+    ExamTimetableConstraint,
     InternalModuleChoice,
     InternalModuleOnOffer,
 )
@@ -23,6 +24,9 @@ class InternalModuleOnOfferFactory(SQLAlchemyModelFactory):
     )
     description: str = factory.Faker("text")
     terms: list[int] = factory.Faker("terms")
+    exam_timetable_constraint: ExamTimetableConstraint = factory.Faker(
+        "exam_timetable_constraint"
+    )
 
     @factory.post_generation
     def with_regulations(
@@ -48,7 +52,7 @@ class DegreeRegulationsFactory(SQLAlchemyModelFactory):
     degree: str = factory.Faker(
         "pystr_format", string_format="##?", letters=string.ascii_uppercase
     )
-    ects: float = factory.Faker("pyfloat", min_value=5, max_value=30)
+    ects: float = factory.Faker("pyfloat", min_value=5, max_value=30, right_digits=2)
     exam_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     cw_component: int = factory.Faker("pyint", min_value=1, max_value=10)
     offering_group = factory.LazyAttribute(
