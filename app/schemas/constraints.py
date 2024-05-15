@@ -72,3 +72,18 @@ class ConstraintsRead(SQLModel):
     year: str
     degree_constraints: DegreeECTSConstraintsRead
     offering_group_constraints: list[OfferingGroupRead]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "degree": "jmc1",
+                    "year": "2324",
+                    "degree_constraints": {"min": 60, "max": 65},
+                    "offering_group_constraints": [
+                        {"id": 77, "label": "OPTIONAL", "min": 0, "max": 10}
+                    ],
+                }
+            ]
+        }
+    }

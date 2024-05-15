@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlmodel import Session, select
 
 from app.dependencies.main import get_abc_service_handler, get_current_user, get_session
@@ -30,9 +30,18 @@ personal_router = APIRouter(prefix="/me/{year}")
     "/external-modules/choices",
     response_model=list[ExternalModuleChoiceRead],
     tags=["personal module choices"],
+    summary="Get Personal External Module Choices",
+    description="""
+Retrieves the list of external modules chosen by the current user for a specific academic year. This endpoint is tailored to provide students with information about their external module selections.
+
+**Access**: Accessible to current students.
+
+**Usage**:
+- The `year` parameter specifies the academic year for which the user's external module choices are queried.
+"""
 )
 async def get_personal_external_module_choices(
-    year: str,
+    year: str = Path(..., description="Academic year in short form e.g. 2324"),
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
@@ -52,10 +61,25 @@ async def get_personal_external_module_choices(
     "/external-modules/choices",
     response_model=ExternalModuleChoiceRead,
     tags=["personal module choices"],
+    summary="Apply for an External Module",
+    description="""
+Allows a current student to apply for an external module for the specified academic year. This endpoint facilitates the process of submitting applications for available external modules.
+
+**Access**: Accessible to current students.
+
+**Usage**:
+- The `year` parameter specifies the academic year for which the application is being made.
+- The `subscription` body must include the module code for the external module the student wishes to apply for.
+
+**Raises**:
+- 400 error if the user has already applied for the specified module.
+- 403 error if the module selection activity is not currently open.
+- 404 error if the specified external module is not found for the given year.
+"""
 )
 async def apply_for_external_module(
-    year: str,
     subscription: ExternalModuleChoiceWrite,
+    year: str = Path(..., description="Academic year in short form e.g. 2324"),
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
     _: str = Depends(verify_module_selection_is_open),
@@ -92,10 +116,24 @@ async def apply_for_external_module(
     "/internal-modules/choices/{choice_id}",
     status_code=204,
     tags=["personal module choices"],
+    summary="Delete Personal Internal Module Choice",
+    description="""
+Allows a current student to delete a previously made internal module choice for a specified academic year. This action is restricted to the choices made by the user themselves.
+
+**Access**: Accessible to current students.
+
+**Usage**:
+- The `choice_id` in the URL path identifies the internal module choice to be deleted.
+- The `year` parameter specifies the academic year associated with the module choice.
+
+**Raises**:
+- 403 error if the module selection activity is not currently open or the module choice belongs to another user and thus cannot be deleted by the current user.
+- 404 error if no internal module choice exists with the provided ID.
+"""
 )
 async def delete_personal_internal_module_choice(
-    year: str,
-    choice_id: int,
+    year: str = Path(..., description="Academic year in short form e.g. 2324"),
+    choice_id: int = Path(..., description="Choice id"),
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
     _: str = Depends(verify_module_selection_is_open),
@@ -131,9 +169,18 @@ async def delete_personal_internal_module_choice(
     "/internal-modules/choices",
     response_model=list[InternalModuleChoiceRead],
     tags=["personal module choices"],
+    summary="Get Personal Internal Module Choices",
+    description="""
+Retrieves the list of internal modules and associated regulations chosen by the current user for a specific academic year. This endpoint provides students with information about their internal module selections.
+
+**Access**: Accessible to current students.
+
+**Usage**:
+- The `year` parameter specifies the academic year for which the user's internal module choices are queried.
+"""
 )
 async def get_personal_internal_module_choices(
-    year: str,
+    year: str = Path(..., description="Academic year in short form e.g. 2324"),
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
 ):
@@ -154,10 +201,25 @@ async def get_personal_internal_module_choices(
     "/internal-modules/choices",
     response_model=InternalModuleChoiceRead,
     tags=["personal module choices"],
+    summary="Apply for an Internal Module",
+    description="""
+Allows current students to apply for an internal module for the specified academic year. This endpoint facilitates the process of registering for internal courses based on set regulations and availability.
+
+**Access**: Accessible to current students.
+
+**Usage**:
+- The `year` parameter specifies the academic year for which the application is being made.
+- The `selection` body must include the module code for the internal module the student wishes to apply for.
+
+**Raises**:
+- 400 error if the module is not offered to the student's degree, the student has already applied, the selection exceeds the total ECTS allowance, violates offering group bounds, or implies a timetable clash.
+- 403 error if the module selection activity is not currently open.
+- 404 error if the specified internal module is not found for the given year.
+"""
 )
 async def apply_for_internal_module(
-    year: str,
     selection: InternalModuleChoiceWrite,
+    year: str = Path(..., description="Academic year in short form e.g. 2324"),
     session: Session = Depends(get_session),
     current_user: str = Depends(get_current_user),
     abc_api: AbcUpstreamService = Depends(get_abc_service_handler),

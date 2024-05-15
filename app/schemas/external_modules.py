@@ -30,6 +30,23 @@ class ExternalModuleOnOffer(SQLModel, table=True):
         sa_relationship_kwargs={"cascade": "all,delete,delete-orphan"},
     )
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                [
+                    {
+                        "id": 77,
+                        "year": "2324",
+                        "title": "Business Studies",
+                        "code": "BUSI60005",
+                        "terms": [1, 2],
+                        "ects": 7.5,
+                    }
+                ]
+            ]
+        }
+    }
+
 
 class ExternalModuleRead(SQLModel):
     id: int
@@ -76,10 +93,44 @@ class ExternalModuleChoiceRead(SQLModel):
     reviewed_by: str | None
 
     class Config:
+        json_schema_extra = {
+            "example": [
+                [
+                    {
+                        "id": 77,
+                        "external_module_id": 99,
+                        "timestamp": "2024-05-09T15:10:07.370Z",
+                        "username": "adumble",
+                        "status": "APPROVED",
+                        "reviewed_on": "2024-05-09T15:10:07.370Z",
+                        "reviewed_by": "adumble",
+                    }
+                ]
+            ]
+        }
+
         json_encoders = {
             datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat()
             if dt
             else None,
+        }
+
+        model_config = {
+            "json_schema_extra": {
+                "examples": [
+                    [
+                        {
+                            "id": 77,
+                            "external_module_id": 99,
+                            "timestamp": "2024-05-09T15:10:07.370Z",
+                            "username": "adumble",
+                            "status": "APPROVED",
+                            "reviewed_on": "2024-05-09T15:10:07.370Z",
+                            "reviewed_by": "adumble",
+                        }
+                    ]
+                ]
+            }
         }
 
 

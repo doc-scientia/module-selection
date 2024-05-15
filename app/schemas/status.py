@@ -8,3 +8,16 @@ class Status(BaseModel):
     version: str
     environment: str
     testing: bool
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "status": "Module Subscriptions alive",
+                    "version": "1.0",
+                    "environment": "production",
+                    "testing": False,
+                }
+            ]
+        }
+    }

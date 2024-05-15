@@ -100,6 +100,39 @@ class InternalModuleOnOfferRead(SQLModel):
     terms: list[int]
     regulations: list[DegreeSpecificModuleRegulationsRead]
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                [
+                    {
+                        "id": 66,
+                        "year": "2324",
+                        "title": "Software Engineering Design",
+                        "code": "50002",
+                        "description": "A description of this module",
+                        "terms": [1],
+                        "regulations": [
+                            {
+                                "id": 7,
+                                "module_id": 66,
+                                "degree": "mc2",
+                                "ects": 5,
+                                "exam_component": 80,
+                                "cw_component": 20,
+                                "offering_group": {
+                                    "id": 32,
+                                    "label": "REQUIRED",
+                                    "min": 15,
+                                    "max": 15,
+                                },
+                            }
+                        ],
+                    }
+                ]
+            ]
+        }
+    }
+
 
 class InternalModuleChoiceRead(SQLModel):
     id: int
@@ -113,6 +146,34 @@ class InternalModuleChoiceRead(SQLModel):
             if current_value := getattr(self, field):
                 obj_dict[field] = current_value.replace(tzinfo=timezone.utc).isoformat()
         return obj_dict
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                [
+                    {
+                        "id": 2300006,
+                        "degree_regulations": {
+                            "id": 77,
+                            "module_id": 99,
+                            "degree": "mcai5",
+                            "ects": 5,
+                            "exam_component": 80,
+                            "cw_component": 20,
+                            "offering_group": {
+                                "id": 7,
+                                "label": "OPTIONAL",
+                                "min": 0,
+                                "max": 20,
+                            },
+                        },
+                        "timestamp": "2024-05-09T14:43:57.164Z",
+                        "username": "hpotter",
+                    }
+                ]
+            ]
+        }
+    }
 
 
 class InternalModuleChoiceWrite(SQLModel):
