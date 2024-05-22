@@ -11,5 +11,5 @@ class OfferingGroupFactory(SQLAlchemyModelFactory):
 
     label: OfferingGroupLabel = factory.Faker("offering_group_label")
     year = factory.Faker("year")
-    min = factory.Faker("pyfloat", min_value=1, max_value=5)
-    max = factory.Faker("pyfloat", min_value=6, max_value=10)
+    min = factory.Faker("pyfloat", min_value=1, max_value=5, right_digits=2)
+    max = factory.Faker("pyfloat", min_value=6, max_value=10, right_digits=2)
