@@ -99,6 +99,7 @@ class InternalModuleOnOfferRead(SQLModel):
     description: str
     terms: list[int]
     regulations: list[DegreeSpecificModuleRegulationsRead]
+    exam_timetable_constraint: ExamTimetableConstraint
 
     model_config = {
         "json_schema_extra": {
