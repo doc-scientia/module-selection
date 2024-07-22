@@ -32,7 +32,7 @@ jobs:
           appSourcePath: ${{ github.workspace }} 
           registryUrl: ghcr.io
           registryUsername: ${{ github.actor }}
-          registryPassword: ${{ secrets.GITHUB_TOKEN }}
+          registryPassword: ${{ secrets.MODULESELECTION_REGISTRY_PASSWORD  }}
           containerAppName: moduleselection2
           resourceGroup: edtech
           imageToBuild: ghcr.io/doc-scientia/moduleselection:${{ github.sha }}
