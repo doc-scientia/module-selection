@@ -33,7 +33,7 @@ jobs:
           registryUrl: ghcr.io
           registryUsername: ${{ github.actor }}
           registryPassword: ${{ secrets.GITHUB_TOKEN }}
-          containerAppName: moduleselection
+          containerAppName: moduleselection2
           resourceGroup: edtech
           imageToBuild: ghcr.io/doc-scientia/moduleselection:${{ github.sha }}
           
