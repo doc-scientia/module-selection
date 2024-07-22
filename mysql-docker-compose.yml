@@ -1,0 +1,24 @@
+services:
+  module_selection_api_mysql:
+    image: mysql
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_DATABASE=module_selection
+    ports:
+      - 3306:3306
+  module_selection_api:
+    image: module_selection
+    environment:
+      - DB_URL=mysql+pymysql://user:pass@module_selection_api_mysql/module_selection
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    ports:
+      - 5000:5000
+    command: uvicorn main:app --reload --proxy-headers --host 0.0.0.0 --port 5000
+    volumes:
+      - .:/module-selection
+    depends_on:
+      - module_selection_api_mysql
