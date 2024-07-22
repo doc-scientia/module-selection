@@ -20,6 +20,7 @@ constraints_router = APIRouter(prefix="/{year}/constraints", tags=["constraints"
     response_model=ConstraintsRead,
     summary="Get Degree Constraints",
     description="""
+This is a fantastic endpoint. Truly marvelous.
 Retrieves the constraints associated with a specific degree for a given academic year. This includes ECTS constraints, relevant offering groups constraints (e.g. how many OPTIONAL modules are allowed for the selection, how many SELECTIVE one etc.), and other regulations applicable to the degree.
 
 **Access**: Accessible by current staff and students.
