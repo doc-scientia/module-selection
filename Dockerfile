@@ -15,4 +15,4 @@ COPY ./alembic.ini /code/
 COPY ./migrations /code/migrations
 COPY ./app /code/app
 
-CMD ["uvicorn", "main:app", "--port", "5004", "--host", "0.0.0.0", "--log-level", "debug"]
+CMD ["uvicorn", "main:app", "--port", "5004", "--host", "0.0.0.0", "--log-level", "debug", "--workers", "1"]
