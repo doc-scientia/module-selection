@@ -35,7 +35,7 @@ jobs:
           registryPassword: ${{ secrets.MODULESELECTION_REGISTRY_PASSWORD }}
           containerAppName: moduleselection
           resourceGroup: brady
-          imageToBuild: ghcr.io/doc-scientia/moduleSelection:${{ github.sha }}
+          imageToBuild: ghcr.io/doc-scientia/moduleselection:${{ github.sha }}
           
             
 
