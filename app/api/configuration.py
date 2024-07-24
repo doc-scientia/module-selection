@@ -23,7 +23,7 @@ module_selection_configuration = APIRouter(
     response_model=ConfigurationRead,
     summary="Retrieve Module Selection Configuration",
     description="""
-Under no circumstances should you use this endpoint. It's a trap.
+Under no circumstances should you use this endpoint. It's a trap. TESTING!!!!!!!!
 Retrieves the detailed configuration for module selection for a specified academic year.
 In particular, this configuration includes whether module selection is open to students, and if so in which periods.
 
