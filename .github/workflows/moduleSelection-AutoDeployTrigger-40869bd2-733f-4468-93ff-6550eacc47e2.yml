@@ -52,8 +52,6 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.MODULESELECTION_AZURE_CREDENTIALS }}
-    # - name: Wait 1 minute for deployment
-    #   run: sleep 60
     - name: Validate deployment succeeded
       run: |
         while true; do
