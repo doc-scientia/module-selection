@@ -36,8 +36,9 @@ jobs:
           containerAppName: moduleselection
           resourceGroup: brady
           imageToBuild: ghcr.io/doc-scientia/moduleselection:${{ github.sha }}
-          
-            
-
-     
-
+      - name: Azure CLI script
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript:
+            az containerapp exec --name "moduleselection" --resource-group "brady" --command "alembic upgrade head"
