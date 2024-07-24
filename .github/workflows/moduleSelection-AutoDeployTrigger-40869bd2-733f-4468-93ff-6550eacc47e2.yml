@@ -42,4 +42,11 @@ jobs:
           containerAppName: moduleselection
           resourceGroup: brady
           imageToBuild: ghcr.io/doc-scientia/moduleselection:${{ github.sha }}
-      - run: /usr/bin/az containerapp exec --name "moduleselection" --resource-group "brady" --command "alembic upgrade head"
+
+  run-migrations:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    
+    steps:
+    - name: alembic upgrade head
+      run: /usr/bin/az containerapp exec --name "moduleselection" --resource-group "brady" --command "alembic upgrade head"
