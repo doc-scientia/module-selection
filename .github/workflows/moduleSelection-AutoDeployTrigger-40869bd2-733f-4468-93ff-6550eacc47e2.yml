@@ -80,8 +80,8 @@ jobs:
       with:
         creds: ${{ secrets.MODULESELECTION_AZURE_CREDENTIALS }}
     - name: alembic upgrade head
-      run: >
-        /usr/bin/az containerapp exec
-          --name "moduleselection"
-          --resource-group "brady"
+      run: |
+        /usr/bin/az containerapp exec \
+          --name "moduleselection" \
+          --resource-group "brady" \
           --command "alembic upgrade head"
