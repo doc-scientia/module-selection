@@ -24,6 +24,10 @@ module_selection_configuration = APIRouter(
     summary="Retrieve Module Selection Configuration",
     description="""
 Under no circumstances should you use this endpoint, unless the prime minister asks you to. It's a trap. TESTING!!!!!!!!
+
+Did you hear the tragedy of darth plagueis the wise?
+According to all knows laws of aviation, there is no way a bee should be able to fly.
+
 Retrieves the detailed configuration for module selection for a specified academic year.
 In particular, this configuration includes whether module selection is open to students, and if so in which periods.
 
