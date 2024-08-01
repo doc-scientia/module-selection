@@ -9,7 +9,9 @@ api_router = APIRouter()
 
 @api_router.get("/status", tags=["status"], response_model=Status, summary="Retrieve API Status",
                 description="""
-Perform status check to determine whether the API is up and running
+Perform status check to determine whether the API is up and running.
+
+And then says Hello World.
 
 
 **Access**: Unrestricted.
