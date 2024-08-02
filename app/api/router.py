@@ -11,7 +11,7 @@ api_router = APIRouter()
                 description="""
 Perform status check to determine whether the API is up and running.
 
-And then says Hello World.
+And then says Hello World, and then says foobar.
 
 
 **Access**: Unrestricted.
